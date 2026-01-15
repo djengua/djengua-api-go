@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"djengua-api-go/internal/domain"
+	"github.com/djengua/djengua-api-go/internal/domain"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"

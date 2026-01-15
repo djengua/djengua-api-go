@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"djengua-api-go/internal/db"
-	"djengua-api-go/internal/domain"
+	"github.com/djengua/djengua-api-go/internal/db"
+	"github.com/djengua/djengua-api-go/internal/domain"
 
 	"github.com/go-chi/chi/v5"
 )

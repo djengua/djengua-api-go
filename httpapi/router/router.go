@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"djengua-api-go/internal/db"
-	"djengua-api-go/internal/httpapi/handlers"
-	appmw "djengua-api-go/internal/httpapi/middleware"
+	"github.com/djengua/djengua-api-go/internal/db"
+	"github.com/djengua/djengua-api-go/internal/httpapi/handlers"
+	appmw "github.com/djengua/djengua-api-go/internal/httpapi/middleware"
 
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"djengua-api-go/internal/domain"
+	"github.com/djengua/djengua-api-go/internal/domain"
 )
 
 var slugRe = regexp.MustCompile(`^[a-z0-9]+(?:-[a-z0-9]+)*$`)

@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
-	"djengua-api-go/internal/config"
-	"djengua-api-go/internal/db"
-	"djengua-api-go/internal/httpapi/router"
+	"github.com/djengua/djengua-api-go/internal/config"
+	"github.com/djengua/djengua-api-go/internal/db"
+	"github.com/djengua/djengua-api-go/internal/httpapi/router"
 )
 
 func main() {
