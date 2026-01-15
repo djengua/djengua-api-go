@@ -260,29 +260,29 @@ func (h *ProductsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func validateProduct(in productPayload) string {
-	if strings.TrimSpace(in.SKU) == "" {
-		return "sku is required"
-	}
-	if strings.TrimSpace(in.Name) == "" {
-		return "name is required"
-	}
-	if in.Price <= 0 {
-		return "price must be > 0"
-	}
-	if strings.TrimSpace(in.Currency) == "" {
-		return "currency is required"
-	}
-	if strings.TrimSpace(string(in.Status)) == "" {
-		return "status is required"
-	}
-	switch in.Status {
-	case domain.ProductActive, domain.ProductInactive, domain.ProductDraft:
-	default:
-		return "invalid status"
-	}
-	if strings.TrimSpace(in.CategoryID) == "" {
-		return "category_id is required"
-	}
-	return ""
-}
+// func validateProduct(in productPayload) string {
+// 	if strings.TrimSpace(in.SKU) == "" {
+// 		return "sku is required"
+// 	}
+// 	if strings.TrimSpace(in.Name) == "" {
+// 		return "name is required"
+// 	}
+// 	if in.Price <= 0 {
+// 		return "price must be > 0"
+// 	}
+// 	if strings.TrimSpace(in.Currency) == "" {
+// 		return "currency is required"
+// 	}
+// 	if strings.TrimSpace(string(in.Status)) == "" {
+// 		return "status is required"
+// 	}
+// 	switch in.Status {
+// 	case domain.ProductActive, domain.ProductInactive, domain.ProductDraft:
+// 	default:
+// 		return "invalid status"
+// 	}
+// 	if strings.TrimSpace(in.CategoryID) == "" {
+// 		return "category_id is required"
+// 	}
+// 	return ""
+// }

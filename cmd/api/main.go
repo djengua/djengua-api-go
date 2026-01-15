@@ -12,9 +12,11 @@ import (
 	"github.com/djengua/djengua-api-go/internal/config"
 	"github.com/djengua/djengua-api-go/internal/db"
 	"github.com/djengua/djengua-api-go/internal/httpapi/router"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	_ = godotenv.Load()
 	cfg := config.FromEnv()
 
 	ctx := context.Background()
