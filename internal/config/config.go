@@ -9,7 +9,7 @@ type Config struct {
 }
 
 func FromEnv() Config {
-	port := getenv("PORT", "8080")
+	port := getenv("PORT_API", "8080")
 	mongoURI := getenv("MONGO_URI", "mongodb://localhost:27017")
 	mongoDB := getenv("MONGO_DB", "portal")
 	return Config{Port: port, MongoURI: mongoURI, MongoDB: mongoDB}
