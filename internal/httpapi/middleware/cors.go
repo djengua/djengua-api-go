@@ -2,11 +2,11 @@ package middleware
 
 import "net/http"
 
-func CORS(next http.Handler, origins string) http.Handler {
+func CORS(next http.Handler, allowedOrigin string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		// 🔐 Orígenes permitidos
-		w.Header().Set("Access-Control-Allow-Origin", origins)
+		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
 		// Si usas cookies o auth por headers específicos:
 		// w.Header().Set("Access-Control-Allow-Origin", "https://tu-frontend.com")
 

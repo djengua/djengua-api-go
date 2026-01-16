@@ -29,8 +29,8 @@ func main() {
 
 	database := client.Database(cfg.MongoDB)
 
+	log.Printf("CORS ALLOWED: %v", cfg.AllowedOrigins)
 	h := middleware.CORS(router.New(database), cfg.AllowedOrigins)
-	// h := router.New(database)
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
