@@ -11,6 +11,7 @@ import (
 
 	"github.com/djengua/djengua-api-go/internal/config"
 	"github.com/djengua/djengua-api-go/internal/db"
+	"github.com/djengua/djengua-api-go/internal/httpapi/middleware"
 	"github.com/djengua/djengua-api-go/internal/httpapi/router"
 	"github.com/joho/godotenv"
 )
@@ -28,7 +29,8 @@ func main() {
 
 	database := client.Database(cfg.MongoDB)
 
-	h := router.New(database)
+	h := middleware.CORS(router.New(database), cfg.AllowedOrigins)
+	// h := router.New(database)
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,

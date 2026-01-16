@@ -472,9 +472,39 @@ func (r *Repository) ListCollections(ctx context.Context, page, pageSize int) ([
 
 	skip := int64((page - 1) * pageSize)
 	limit := int64(pageSize)
-	opts := options.Find().SetSort(bson.D{{Key: "created_at", Value: -1}}).SetSkip(skip).SetLimit(limit)
+	opts := options.Find().
+		SetSort(bson.D{{Key: "created_at", Value: -1}}).
+		SetSkip(skip).
+		SetLimit(limit)
 
-	cur, err := r.collections.Find(ctx, notDeletedFilter(), opts)
+	now := time.Now().UTC()
+
+	// Base: no borrados (soft delete)
+	filter := notDeletedFilter()
+
+	// AND status=active AND ventana de vigencia
+	filter = bson.M{
+		"$and": []bson.M{
+			filter,
+			{"status": "active"},
+			{
+				"$or": []bson.M{
+					{"start_date": bson.M{"$exists": false}},
+					{"start_date": bson.M{"$eq": nil}},
+					{"start_date": bson.M{"$lte": now}},
+				},
+			},
+			{
+				"$or": []bson.M{
+					{"end_date": bson.M{"$exists": false}},
+					{"end_date": bson.M{"$eq": nil}},
+					{"end_date": bson.M{"$gt": now}}, // fin exclusivo
+				},
+			},
+		},
+	}
+
+	cur, err := r.collections.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -493,6 +523,41 @@ func (r *Repository) ListCollections(ctx context.Context, page, pageSize int) ([
 	}
 	return out, nil
 }
+
+// func (r *Repository) ListCollections(ctx context.Context, page, pageSize int) ([]domain.Collection, error) {
+// 	if page <= 0 {
+// 		page = 1
+// 	}
+// 	if pageSize <= 0 {
+// 		pageSize = 50
+// 	}
+// 	if pageSize > 200 {
+// 		pageSize = 200
+// 	}
+
+// 	skip := int64((page - 1) * pageSize)
+// 	limit := int64(pageSize)
+// 	opts := options.Find().SetSort(bson.D{{Key: "created_at", Value: -1}}).SetSkip(skip).SetLimit(limit)
+
+// 	cur, err := r.collections.Find(ctx, notDeletedFilter(), opts)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer cur.Close(ctx)
+
+// 	out := make([]domain.Collection, 0)
+// 	for cur.Next(ctx) {
+// 		var d collectionDoc
+// 		if err := cur.Decode(&d); err != nil {
+// 			return nil, err
+// 		}
+// 		out = append(out, d.toDomain())
+// 	}
+// 	if err := cur.Err(); err != nil {
+// 		return nil, err
+// 	}
+// 	return out, nil
+// }
 
 func (r *Repository) UpdateCollectionPut(ctx context.Context, id string, in domain.Collection) (domain.Collection, error) {
 	now := time.Now().UTC()
