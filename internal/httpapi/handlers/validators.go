@@ -25,7 +25,7 @@ func validateProduct(in productPayload) string {
 		return "currency must be a 3-letter code (e.g. USD)"
 	}
 	switch in.Status {
-	case domain.ProductActive, domain.ProductInactive, domain.ProductDraft:
+	case domain.Active, domain.Inactive, domain.Draft:
 		// ok
 	default:
 		return "status must be active|inactive|draft"
@@ -37,11 +37,11 @@ func validateProduct(in productPayload) string {
 }
 
 type categoryPayload struct {
-	ID          string                `json:"id,omitempty"`
-	Name        string                `json:"name"`
-	Slug        string                `json:"slug"`
-	Description *string               `json:"description,omitempty"`
-	Status      domain.CategoryStatus `json:"status"`
+	ID          string        `json:"id,omitempty"`
+	Name        string        `json:"name"`
+	Slug        string        `json:"slug"`
+	Description *string       `json:"description,omitempty"`
+	Status      domain.Status `json:"status"`
 }
 
 func validateCategory(in categoryPayload) string {
@@ -56,7 +56,7 @@ func validateCategory(in categoryPayload) string {
 		return "slug must be URL-friendly (lowercase letters, numbers, hyphens)"
 	}
 	switch in.Status {
-	case domain.CategoryActive, domain.CategoryInactive:
+	case domain.Active, domain.Inactive:
 		// ok
 	default:
 		return "status must be active|inactive"
@@ -65,13 +65,13 @@ func validateCategory(in categoryPayload) string {
 }
 
 type collectionPayload struct {
-	ID          string                  `json:"id,omitempty"`
-	Name        string                  `json:"name"`
-	Slug        string                  `json:"slug"`
-	Description *string                 `json:"description,omitempty"`
-	Status      domain.CollectionStatus `json:"status"`
-	StartDate   *time.Time              `json:"start_date,omitempty"`
-	EndDate     *time.Time              `json:"end_date,omitempty"`
+	ID          string        `json:"id,omitempty"`
+	Name        string        `json:"name"`
+	Slug        string        `json:"slug"`
+	Description *string       `json:"description,omitempty"`
+	Status      domain.Status `json:"status"`
+	StartDate   *time.Time    `json:"start_date,omitempty"`
+	EndDate     *time.Time    `json:"end_date,omitempty"`
 }
 
 func validateCollection(in collectionPayload) string {
@@ -86,7 +86,7 @@ func validateCollection(in collectionPayload) string {
 		return "slug must be URL-friendly (lowercase letters, numbers, hyphens)"
 	}
 	switch in.Status {
-	case domain.CollectionActive, domain.CollectionInactive:
+	case domain.Active, domain.Inactive:
 		// ok
 	default:
 		return "status must be active|inactive"

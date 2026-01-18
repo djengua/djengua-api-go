@@ -121,7 +121,7 @@ func (h *CollectionsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	}
 	if v, ok := patch["status"]; ok {
 		if s, ok := v.(string); ok {
-			current.Status = domain.CollectionStatus(s)
+			current.Status = domain.Status(s)
 		}
 	}
 	if v, ok := patch["start_date"]; ok {

@@ -35,44 +35,44 @@ func NewRepository(database *mongodriver.Database) *Repository {
 // --- Mongo documents ---
 
 type productDoc struct {
-	ID            string               `bson:"_id"`
-	SKU           string               `bson:"sku"`
-	Name          string               `bson:"name"`
-	Description   *string              `bson:"description,omitempty"`
-	Price         float64              `bson:"price"`
-	Currency      string               `bson:"currency"`
-	Status        domain.ProductStatus `bson:"status"`
-	CategoryID    string               `bson:"category_id"`
-	CollectionIDs []string             `bson:"collection_ids,omitempty"`
-	Images        []string             `bson:"images,omitempty"`
-	Stock         *int32               `bson:"stock,omitempty"`
-	CreatedAt     time.Time            `bson:"created_at"`
-	UpdatedAt     time.Time            `bson:"updated_at"`
-	DeletedAt     *time.Time           `bson:"deleted_at,omitempty"`
+	ID            string        `bson:"_id"`
+	SKU           string        `bson:"sku"`
+	Name          string        `bson:"name"`
+	Description   *string       `bson:"description,omitempty"`
+	Price         float64       `bson:"price"`
+	Currency      string        `bson:"currency"`
+	Status        domain.Status `bson:"status"`
+	CategoryID    string        `bson:"category_id"`
+	CollectionIDs []string      `bson:"collection_ids,omitempty"`
+	Images        []string      `bson:"images,omitempty"`
+	Stock         *int32        `bson:"stock,omitempty"`
+	CreatedAt     time.Time     `bson:"created_at"`
+	UpdatedAt     time.Time     `bson:"updated_at"`
+	DeletedAt     *time.Time    `bson:"deleted_at,omitempty"`
 }
 
 type categoryDoc struct {
-	ID          string                `bson:"_id"`
-	Name        string                `bson:"name"`
-	Slug        string                `bson:"slug"`
-	Description *string               `bson:"description,omitempty"`
-	Status      domain.CategoryStatus `bson:"status"`
-	CreatedAt   time.Time             `bson:"created_at"`
-	UpdatedAt   time.Time             `bson:"updated_at"`
-	DeletedAt   *time.Time            `bson:"deleted_at,omitempty"`
+	ID          string        `bson:"_id"`
+	Name        string        `bson:"name"`
+	Slug        string        `bson:"slug"`
+	Description *string       `bson:"description,omitempty"`
+	Status      domain.Status `bson:"status"`
+	CreatedAt   time.Time     `bson:"created_at"`
+	UpdatedAt   time.Time     `bson:"updated_at"`
+	DeletedAt   *time.Time    `bson:"deleted_at,omitempty"`
 }
 
 type collectionDoc struct {
-	ID          string                  `bson:"_id"`
-	Name        string                  `bson:"name"`
-	Slug        string                  `bson:"slug"`
-	Description *string                 `bson:"description,omitempty"`
-	Status      domain.CollectionStatus `bson:"status"`
-	StartDate   *time.Time              `bson:"start_date,omitempty"`
-	EndDate     *time.Time              `bson:"end_date,omitempty"`
-	CreatedAt   time.Time               `bson:"created_at"`
-	UpdatedAt   time.Time               `bson:"updated_at"`
-	DeletedAt   *time.Time              `bson:"deleted_at,omitempty"`
+	ID          string        `bson:"_id"`
+	Name        string        `bson:"name"`
+	Slug        string        `bson:"slug"`
+	Description *string       `bson:"description,omitempty"`
+	Status      domain.Status `bson:"status"`
+	StartDate   *time.Time    `bson:"start_date,omitempty"`
+	EndDate     *time.Time    `bson:"end_date,omitempty"`
+	CreatedAt   time.Time     `bson:"created_at"`
+	UpdatedAt   time.Time     `bson:"updated_at"`
+	DeletedAt   *time.Time    `bson:"deleted_at,omitempty"`
 }
 
 func (d productDoc) toDomain() domain.Product {
@@ -129,17 +129,17 @@ func notDeletedFilter() bson.M {
 
 // --- Products ---
 
-func (f *ports.ProductFilters) Normalize() {
-	if f.Page <= 0 {
-		f.Page = 1
-	}
-	if f.PageSize <= 0 {
-		f.PageSize = 20
-	}
-	if f.PageSize > 100 {
-		f.PageSize = 100
-	}
-}
+// func (f *ports.ProductFilters) Normalize() {
+// 	if f.Page <= 0 {
+// 		f.Page = 1
+// 	}
+// 	if f.PageSize <= 0 {
+// 		f.PageSize = 20
+// 	}
+// 	if f.PageSize > 100 {
+// 		f.PageSize = 100
+// 	}
+// }
 
 func (r *Repository) CreateProduct(ctx context.Context, in domain.Product) (domain.Product, error) {
 	now := time.Now().UTC()

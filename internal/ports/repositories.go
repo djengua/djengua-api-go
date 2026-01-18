@@ -10,7 +10,7 @@ import (
 var ErrNotFound = errors.New("not found")
 
 type ProductFilters struct {
-	Status       *domain.ProductStatus
+	Status       *domain.Status
 	CategoryID   *string
 	CollectionID *string
 	MinPrice     *float64

@@ -116,7 +116,7 @@ func (h *CategoriesHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	}
 	if v, ok := patch["status"]; ok {
 		if s, ok := v.(string); ok {
-			current.Status = domain.CategoryStatus(s)
+			current.Status = domain.Status(s)
 		}
 	}
 
