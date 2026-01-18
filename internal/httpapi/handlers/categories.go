@@ -4,24 +4,24 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/djengua/djengua-api-go/internal/db"
+	"github.com/djengua/djengua-api-go/internal/application"
 	"github.com/djengua/djengua-api-go/internal/domain"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type CategoriesHandler struct {
-	repo *db.Repository
+	service *application.CategoriesService
 }
 
-func NewCategoriesHandler(repo *db.Repository) *CategoriesHandler {
-	return &CategoriesHandler{repo: repo}
+func NewCategoriesHandler(service *application.CategoriesService) *CategoriesHandler {
+	return &CategoriesHandler{service: service}
 }
 
 func (h *CategoriesHandler) List(w http.ResponseWriter, r *http.Request) {
 	page := parseIntQuery(r, "page", 1)
 	pageSize := parseIntQuery(r, "page_size", 50)
-	items, err := h.repo.ListCategories(r.Context(), page, pageSize)
+	items, err := h.service.List(r.Context(), page, pageSize)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -30,7 +30,7 @@ func (h *CategoriesHandler) List(w http.ResponseWriter, r *http.Request) {
 
 func (h *CategoriesHandler) Get(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	c, err := h.repo.GetCategory(r.Context(), id)
+	c, err := h.service.Get(r.Context(), id)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -48,7 +48,7 @@ func (h *CategoriesHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := h.repo.CreateCategory(r.Context(), domain.Category{
+	c, err := h.service.Create(r.Context(), domain.Category{
 		ID:          strings.TrimSpace(in.ID),
 		Name:        strings.TrimSpace(in.Name),
 		Slug:        strings.TrimSpace(in.Slug),
@@ -73,7 +73,7 @@ func (h *CategoriesHandler) Put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := h.repo.UpdateCategoryPut(r.Context(), id, domain.Category{
+	c, err := h.service.Update(r.Context(), id, domain.Category{
 		Name:        strings.TrimSpace(in.Name),
 		Slug:        strings.TrimSpace(in.Slug),
 		Description: in.Description,
@@ -87,7 +87,7 @@ func (h *CategoriesHandler) Put(w http.ResponseWriter, r *http.Request) {
 
 func (h *CategoriesHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	current, err := h.repo.GetCategory(r.Context(), id)
+	current, err := h.service.Get(r.Context(), id)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -116,7 +116,7 @@ func (h *CategoriesHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	}
 	if v, ok := patch["status"]; ok {
 		if s, ok := v.(string); ok {
-			current.Status = domain.CategoryStatus(s)
+			current.Status = domain.Status(s)
 		}
 	}
 
@@ -126,7 +126,7 @@ func (h *CategoriesHandler) Patch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := h.repo.UpdateCategoryPut(r.Context(), id, current)
+	c, err := h.service.Update(r.Context(), id, current)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -135,7 +135,7 @@ func (h *CategoriesHandler) Patch(w http.ResponseWriter, r *http.Request) {
 
 func (h *CategoriesHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	if err := h.repo.DeleteCategory(r.Context(), id); mapDBErr(w, err) {
+	if err := h.service.Delete(r.Context(), id); mapDBErr(w, err) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)

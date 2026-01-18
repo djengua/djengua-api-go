@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/djengua/djengua-api-go/internal/db"
+	"github.com/djengua/djengua-api-go/internal/application"
 	"github.com/djengua/djengua-api-go/internal/httpapi/handlers"
 	appmw "github.com/djengua/djengua-api-go/internal/httpapi/middleware"
 
@@ -12,12 +12,9 @@ import (
 	chimw "github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func New(database *mongo.Database) http.Handler {
-	repo := db.NewRepository(database)
-
+func New(productsService *application.ProductsService, categoriesService *application.CategoriesService, collectionsService *application.CollectionsService) http.Handler {
 	r := chi.NewRouter()
 
 	// --- middleware ---
@@ -35,9 +32,9 @@ func New(database *mongo.Database) http.Handler {
 	// Prometheus scrape endpoint
 	r.Handle("/metrics", promhttp.Handler())
 
-	ph := handlers.NewProductsHandler(repo)
-	ch := handlers.NewCategoriesHandler(repo)
-	coh := handlers.NewCollectionsHandler(repo)
+	ph := handlers.NewProductsHandler(productsService)
+	ch := handlers.NewCategoriesHandler(categoriesService)
+	coh := handlers.NewCollectionsHandler(collectionsService)
 
 	r.Route("/api/v1", func(api chi.Router) {
 		api.Route("/products", func(rr chi.Router) {

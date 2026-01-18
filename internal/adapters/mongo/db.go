@@ -1,16 +1,16 @@
-package db
+package mongo
 
 import (
 	"context"
 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
+	mongodriver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // NewClient creates a MongoDB client and verifies the connection with a ping.
-func NewClient(ctx context.Context, mongoURI string) (*mongo.Client, error) {
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
+func NewClient(ctx context.Context, mongoURI string) (*mongodriver.Client, error) {
+	client, err := mongodriver.Connect(ctx, options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		return nil, err
 	}

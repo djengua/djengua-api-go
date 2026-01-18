@@ -5,24 +5,24 @@ import (
 	"strings"
 	"time"
 
-	"github.com/djengua/djengua-api-go/internal/db"
+	"github.com/djengua/djengua-api-go/internal/application"
 	"github.com/djengua/djengua-api-go/internal/domain"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type CollectionsHandler struct {
-	repo *db.Repository
+	service *application.CollectionsService
 }
 
-func NewCollectionsHandler(repo *db.Repository) *CollectionsHandler {
-	return &CollectionsHandler{repo: repo}
+func NewCollectionsHandler(service *application.CollectionsService) *CollectionsHandler {
+	return &CollectionsHandler{service: service}
 }
 
 func (h *CollectionsHandler) List(w http.ResponseWriter, r *http.Request) {
 	page := parseIntQuery(r, "page", 1)
 	pageSize := parseIntQuery(r, "page_size", 50)
-	items, err := h.repo.ListCollections(r.Context(), page, pageSize)
+	items, err := h.service.List(r.Context(), page, pageSize)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -31,7 +31,7 @@ func (h *CollectionsHandler) List(w http.ResponseWriter, r *http.Request) {
 
 func (h *CollectionsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	c, err := h.repo.GetCollection(r.Context(), id)
+	c, err := h.service.Get(r.Context(), id)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -49,7 +49,7 @@ func (h *CollectionsHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := h.repo.CreateCollection(r.Context(), domain.Collection{
+	c, err := h.service.Create(r.Context(), domain.Collection{
 		ID:          strings.TrimSpace(in.ID),
 		Name:        strings.TrimSpace(in.Name),
 		Slug:        strings.TrimSpace(in.Slug),
@@ -76,7 +76,7 @@ func (h *CollectionsHandler) Put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := h.repo.UpdateCollectionPut(r.Context(), id, domain.Collection{
+	c, err := h.service.Update(r.Context(), id, domain.Collection{
 		Name:        strings.TrimSpace(in.Name),
 		Slug:        strings.TrimSpace(in.Slug),
 		Description: in.Description,
@@ -92,7 +92,7 @@ func (h *CollectionsHandler) Put(w http.ResponseWriter, r *http.Request) {
 
 func (h *CollectionsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	current, err := h.repo.GetCollection(r.Context(), id)
+	current, err := h.service.Get(r.Context(), id)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -121,7 +121,7 @@ func (h *CollectionsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	}
 	if v, ok := patch["status"]; ok {
 		if s, ok := v.(string); ok {
-			current.Status = domain.CollectionStatus(s)
+			current.Status = domain.Status(s)
 		}
 	}
 	if v, ok := patch["start_date"]; ok {
@@ -151,7 +151,7 @@ func (h *CollectionsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := h.repo.UpdateCollectionPut(r.Context(), id, current)
+	c, err := h.service.Update(r.Context(), id, current)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -160,7 +160,7 @@ func (h *CollectionsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 
 func (h *CollectionsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	if err := h.repo.DeleteCollection(r.Context(), id); mapDBErr(w, err) {
+	if err := h.service.Delete(r.Context(), id); mapDBErr(w, err) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)

@@ -5,32 +5,33 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/djengua/djengua-api-go/internal/db"
+	"github.com/djengua/djengua-api-go/internal/application"
 	"github.com/djengua/djengua-api-go/internal/domain"
+	"github.com/djengua/djengua-api-go/internal/ports"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type ProductsHandler struct {
-	repo *db.Repository
+	service *application.ProductsService
 }
 
-func NewProductsHandler(repo *db.Repository) *ProductsHandler {
-	return &ProductsHandler{repo: repo}
+func NewProductsHandler(service *application.ProductsService) *ProductsHandler {
+	return &ProductsHandler{service: service}
 }
 
 type productPayload struct {
-	ID            string               `json:"id,omitempty"`
-	SKU           string               `json:"sku"`
-	Name          string               `json:"name"`
-	Description   *string              `json:"description,omitempty"`
-	Price         float64              `json:"price"`
-	Currency      string               `json:"currency"`
-	Status        domain.ProductStatus `json:"status"`
-	CategoryID    string               `json:"category_id"`
-	CollectionIDs []string             `json:"collection_ids,omitempty"`
-	Images        []string             `json:"images,omitempty"`
-	Stock         *int32               `json:"stock,omitempty"`
+	ID            string        `json:"id,omitempty"`
+	SKU           string        `json:"sku"`
+	Name          string        `json:"name"`
+	Description   *string       `json:"description,omitempty"`
+	Price         float64       `json:"price"`
+	Currency      string        `json:"currency"`
+	Status        domain.Status `json:"status"`
+	CategoryID    string        `json:"category_id"`
+	CollectionIDs []string      `json:"collection_ids,omitempty"`
+	Images        []string      `json:"images,omitempty"`
+	Stock         *int32        `json:"stock,omitempty"`
 }
 
 func (h *ProductsHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -38,12 +39,12 @@ func (h *ProductsHandler) List(w http.ResponseWriter, r *http.Request) {
 	page := parseIntQuery(r, "page", 1)
 	pageSize := parseIntQuery(r, "page_size", 20)
 
-	var filters db.ProductFilters
+	var filters ports.ProductFilters
 	filters.Page = page
 	filters.PageSize = pageSize
 
 	if v := q.Get("status"); v != "" {
-		s := domain.ProductStatus(v)
+		s := domain.Status(v)
 		filters.Status = &s
 	}
 	if v := q.Get("category_id"); v != "" {
@@ -68,7 +69,7 @@ func (h *ProductsHandler) List(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	items, err := h.repo.ListProducts(r.Context(), filters)
+	items, err := h.service.List(r.Context(), filters)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -77,7 +78,7 @@ func (h *ProductsHandler) List(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProductsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	p, err := h.repo.GetProduct(r.Context(), id)
+	p, err := h.service.Get(r.Context(), id)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -95,7 +96,7 @@ func (h *ProductsHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p, err := h.repo.CreateProduct(r.Context(), domain.Product{
+	p, err := h.service.Create(r.Context(), domain.Product{
 		ID:            strings.TrimSpace(in.ID),
 		SKU:           strings.TrimSpace(in.SKU),
 		Name:          strings.TrimSpace(in.Name),
@@ -126,7 +127,7 @@ func (h *ProductsHandler) Put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p, err := h.repo.UpdateProductPut(r.Context(), id, domain.Product{
+	p, err := h.service.Update(r.Context(), id, domain.Product{
 		SKU:           strings.TrimSpace(in.SKU),
 		Name:          strings.TrimSpace(in.Name),
 		Description:   in.Description,
@@ -146,7 +147,7 @@ func (h *ProductsHandler) Put(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProductsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	current, err := h.repo.GetProduct(r.Context(), id)
+	current, err := h.service.Get(r.Context(), id)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -200,7 +201,7 @@ func (h *ProductsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	applyString("currency", &current.Currency)
 	if v, ok := patch["status"]; ok {
 		if s, ok := v.(string); ok {
-			current.Status = domain.ProductStatus(s)
+			current.Status = domain.Status(s)
 		}
 	}
 	applyString("category_id", &current.CategoryID)
@@ -245,7 +246,7 @@ func (h *ProductsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p, err := h.repo.UpdateProductPut(r.Context(), id, current)
+	p, err := h.service.Update(r.Context(), id, current)
 	if mapDBErr(w, err) {
 		return
 	}
@@ -254,7 +255,7 @@ func (h *ProductsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProductsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	if err := h.repo.DeleteProduct(r.Context(), id); mapDBErr(w, err) {
+	if err := h.service.Delete(r.Context(), id); mapDBErr(w, err) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/djengua/djengua-api-go/internal/db"
+	"github.com/djengua/djengua-api-go/internal/ports"
 )
 
 type errorResponse struct {
@@ -45,7 +45,7 @@ func mapDBErr(w http.ResponseWriter, err error) bool {
 	if err == nil {
 		return false
 	}
-	if errors.Is(err, db.ErrNotFound) {
+	if errors.Is(err, ports.ErrNotFound) {
 		writeError(w, http.StatusNotFound, "not found")
 		return true
 	}

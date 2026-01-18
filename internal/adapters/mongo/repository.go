@@ -1,4 +1,4 @@
-package db
+package mongo
 
 import (
 	"context"
@@ -7,24 +7,23 @@ import (
 	"time"
 
 	"github.com/djengua/djengua-api-go/internal/domain"
+	"github.com/djengua/djengua-api-go/internal/ports"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
+	mongodriver "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var ErrNotFound = errors.New("not found")
-
 type Repository struct {
-	db          *mongo.Database
-	products    *mongo.Collection
-	categories  *mongo.Collection
-	collections *mongo.Collection
+	db          *mongodriver.Database
+	products    *mongodriver.Collection
+	categories  *mongodriver.Collection
+	collections *mongodriver.Collection
 }
 
-func NewRepository(database *mongo.Database) *Repository {
+func NewRepository(database *mongodriver.Database) *Repository {
 	return &Repository{
 		db:          database,
 		products:    database.Collection("products"),
@@ -36,44 +35,44 @@ func NewRepository(database *mongo.Database) *Repository {
 // --- Mongo documents ---
 
 type productDoc struct {
-	ID            string               `bson:"_id"`
-	SKU           string               `bson:"sku"`
-	Name          string               `bson:"name"`
-	Description   *string              `bson:"description,omitempty"`
-	Price         float64              `bson:"price"`
-	Currency      string               `bson:"currency"`
-	Status        domain.ProductStatus `bson:"status"`
-	CategoryID    string               `bson:"category_id"`
-	CollectionIDs []string             `bson:"collection_ids,omitempty"`
-	Images        []string             `bson:"images,omitempty"`
-	Stock         *int32               `bson:"stock,omitempty"`
-	CreatedAt     time.Time            `bson:"created_at"`
-	UpdatedAt     time.Time            `bson:"updated_at"`
-	DeletedAt     *time.Time           `bson:"deleted_at,omitempty"`
+	ID            string        `bson:"_id"`
+	SKU           string        `bson:"sku"`
+	Name          string        `bson:"name"`
+	Description   *string       `bson:"description,omitempty"`
+	Price         float64       `bson:"price"`
+	Currency      string        `bson:"currency"`
+	Status        domain.Status `bson:"status"`
+	CategoryID    string        `bson:"category_id"`
+	CollectionIDs []string      `bson:"collection_ids,omitempty"`
+	Images        []string      `bson:"images,omitempty"`
+	Stock         *int32        `bson:"stock,omitempty"`
+	CreatedAt     time.Time     `bson:"created_at"`
+	UpdatedAt     time.Time     `bson:"updated_at"`
+	DeletedAt     *time.Time    `bson:"deleted_at,omitempty"`
 }
 
 type categoryDoc struct {
-	ID          string                `bson:"_id"`
-	Name        string                `bson:"name"`
-	Slug        string                `bson:"slug"`
-	Description *string               `bson:"description,omitempty"`
-	Status      domain.CategoryStatus `bson:"status"`
-	CreatedAt   time.Time             `bson:"created_at"`
-	UpdatedAt   time.Time             `bson:"updated_at"`
-	DeletedAt   *time.Time            `bson:"deleted_at,omitempty"`
+	ID          string        `bson:"_id"`
+	Name        string        `bson:"name"`
+	Slug        string        `bson:"slug"`
+	Description *string       `bson:"description,omitempty"`
+	Status      domain.Status `bson:"status"`
+	CreatedAt   time.Time     `bson:"created_at"`
+	UpdatedAt   time.Time     `bson:"updated_at"`
+	DeletedAt   *time.Time    `bson:"deleted_at,omitempty"`
 }
 
 type collectionDoc struct {
-	ID          string                  `bson:"_id"`
-	Name        string                  `bson:"name"`
-	Slug        string                  `bson:"slug"`
-	Description *string                 `bson:"description,omitempty"`
-	Status      domain.CollectionStatus `bson:"status"`
-	StartDate   *time.Time              `bson:"start_date,omitempty"`
-	EndDate     *time.Time              `bson:"end_date,omitempty"`
-	CreatedAt   time.Time               `bson:"created_at"`
-	UpdatedAt   time.Time               `bson:"updated_at"`
-	DeletedAt   *time.Time              `bson:"deleted_at,omitempty"`
+	ID          string        `bson:"_id"`
+	Name        string        `bson:"name"`
+	Slug        string        `bson:"slug"`
+	Description *string       `bson:"description,omitempty"`
+	Status      domain.Status `bson:"status"`
+	StartDate   *time.Time    `bson:"start_date,omitempty"`
+	EndDate     *time.Time    `bson:"end_date,omitempty"`
+	CreatedAt   time.Time     `bson:"created_at"`
+	UpdatedAt   time.Time     `bson:"updated_at"`
+	DeletedAt   *time.Time    `bson:"deleted_at,omitempty"`
 }
 
 func (d productDoc) toDomain() domain.Product {
@@ -130,28 +129,17 @@ func notDeletedFilter() bson.M {
 
 // --- Products ---
 
-type ProductFilters struct {
-	Status       *domain.ProductStatus
-	CategoryID   *string
-	CollectionID *string
-	MinPrice     *float64
-	MaxPrice     *float64
-	Q            *string
-	Page         int
-	PageSize     int
-}
-
-func (f *ProductFilters) normalize() {
-	if f.Page <= 0 {
-		f.Page = 1
-	}
-	if f.PageSize <= 0 {
-		f.PageSize = 20
-	}
-	if f.PageSize > 100 {
-		f.PageSize = 100
-	}
-}
+// func (f *ports.ProductFilters) Normalize() {
+// 	if f.Page <= 0 {
+// 		f.Page = 1
+// 	}
+// 	if f.PageSize <= 0 {
+// 		f.PageSize = 20
+// 	}
+// 	if f.PageSize > 100 {
+// 		f.PageSize = 100
+// 	}
+// }
 
 func (r *Repository) CreateProduct(ctx context.Context, in domain.Product) (domain.Product, error) {
 	now := time.Now().UTC()
@@ -191,8 +179,8 @@ func (r *Repository) GetProduct(ctx context.Context, id string) (domain.Product,
 
 	var d productDoc
 	err := r.products.FindOne(ctx, filter).Decode(&d)
-	if errors.Is(err, mongo.ErrNoDocuments) {
-		return domain.Product{}, ErrNotFound
+	if errors.Is(err, mongodriver.ErrNoDocuments) {
+		return domain.Product{}, ports.ErrNotFound
 	}
 	if err != nil {
 		return domain.Product{}, err
@@ -200,8 +188,8 @@ func (r *Repository) GetProduct(ctx context.Context, id string) (domain.Product,
 	return d.toDomain(), nil
 }
 
-func (r *Repository) ListProducts(ctx context.Context, f ProductFilters) ([]domain.Product, error) {
-	f.normalize()
+func (r *Repository) ListProducts(ctx context.Context, f ports.ProductFilters) ([]domain.Product, error) {
+	f.Normalize()
 
 	filter := notDeletedFilter()
 
@@ -282,7 +270,7 @@ func (r *Repository) UpdateProductPut(ctx context.Context, id string, in domain.
 		return domain.Product{}, err
 	}
 	if res.MatchedCount == 0 {
-		return domain.Product{}, ErrNotFound
+		return domain.Product{}, ports.ErrNotFound
 	}
 	return r.GetProduct(ctx, id)
 }
@@ -298,7 +286,7 @@ func (r *Repository) DeleteProduct(ctx context.Context, id string) error {
 		return err
 	}
 	if res.MatchedCount == 0 {
-		return ErrNotFound
+		return ports.ErrNotFound
 	}
 	return nil
 }
@@ -334,8 +322,8 @@ func (r *Repository) GetCategory(ctx context.Context, id string) (domain.Categor
 	}
 	var d categoryDoc
 	err := r.categories.FindOne(ctx, filter).Decode(&d)
-	if errors.Is(err, mongo.ErrNoDocuments) {
-		return domain.Category{}, ErrNotFound
+	if errors.Is(err, mongodriver.ErrNoDocuments) {
+		return domain.Category{}, ports.ErrNotFound
 	}
 	if err != nil {
 		return domain.Category{}, err
@@ -396,7 +384,7 @@ func (r *Repository) UpdateCategoryPut(ctx context.Context, id string, in domain
 		return domain.Category{}, err
 	}
 	if res.MatchedCount == 0 {
-		return domain.Category{}, ErrNotFound
+		return domain.Category{}, ports.ErrNotFound
 	}
 	return r.GetCategory(ctx, id)
 }
@@ -412,7 +400,7 @@ func (r *Repository) DeleteCategory(ctx context.Context, id string) error {
 		return err
 	}
 	if res.MatchedCount == 0 {
-		return ErrNotFound
+		return ports.ErrNotFound
 	}
 	return nil
 }
@@ -450,8 +438,8 @@ func (r *Repository) GetCollection(ctx context.Context, id string) (domain.Colle
 	}
 	var d collectionDoc
 	err := r.collections.FindOne(ctx, filter).Decode(&d)
-	if errors.Is(err, mongo.ErrNoDocuments) {
-		return domain.Collection{}, ErrNotFound
+	if errors.Is(err, mongodriver.ErrNoDocuments) {
+		return domain.Collection{}, ports.ErrNotFound
 	}
 	if err != nil {
 		return domain.Collection{}, err
@@ -579,7 +567,7 @@ func (r *Repository) UpdateCollectionPut(ctx context.Context, id string, in doma
 		return domain.Collection{}, err
 	}
 	if res.MatchedCount == 0 {
-		return domain.Collection{}, ErrNotFound
+		return domain.Collection{}, ports.ErrNotFound
 	}
 	return r.GetCollection(ctx, id)
 }
@@ -595,7 +583,7 @@ func (r *Repository) DeleteCollection(ctx context.Context, id string) error {
 		return err
 	}
 	if res.MatchedCount == 0 {
-		return ErrNotFound
+		return ports.ErrNotFound
 	}
 	return nil
 }
