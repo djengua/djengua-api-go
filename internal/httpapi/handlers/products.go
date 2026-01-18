@@ -20,17 +20,17 @@ func NewProductsHandler(repo *db.Repository) *ProductsHandler {
 }
 
 type productPayload struct {
-	ID            string               `json:"id,omitempty"`
-	SKU           string               `json:"sku"`
-	Name          string               `json:"name"`
-	Description   *string              `json:"description,omitempty"`
-	Price         float64              `json:"price"`
-	Currency      string               `json:"currency"`
-	Status        domain.ProductStatus `json:"status"`
-	CategoryID    string               `json:"category_id"`
-	CollectionIDs []string             `json:"collection_ids,omitempty"`
-	Images        []string             `json:"images,omitempty"`
-	Stock         *int32               `json:"stock,omitempty"`
+	ID            string        `json:"id,omitempty"`
+	SKU           string        `json:"sku"`
+	Name          string        `json:"name"`
+	Description   *string       `json:"description,omitempty"`
+	Price         float64       `json:"price"`
+	Currency      string        `json:"currency"`
+	Status        domain.Status `json:"status"`
+	CategoryID    string        `json:"category_id"`
+	CollectionIDs []string      `json:"collection_ids,omitempty"`
+	Images        []string      `json:"images,omitempty"`
+	Stock         *int32        `json:"stock,omitempty"`
 }
 
 func (h *ProductsHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +43,7 @@ func (h *ProductsHandler) List(w http.ResponseWriter, r *http.Request) {
 	filters.PageSize = pageSize
 
 	if v := q.Get("status"); v != "" {
-		s := domain.ProductStatus(v)
+		s := domain.Status(v)
 		filters.Status = &s
 	}
 	if v := q.Get("category_id"); v != "" {
@@ -200,7 +200,7 @@ func (h *ProductsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	applyString("currency", &current.Currency)
 	if v, ok := patch["status"]; ok {
 		if s, ok := v.(string); ok {
-			current.Status = domain.ProductStatus(s)
+			current.Status = domain.Status(s)
 		}
 	}
 	applyString("category_id", &current.CategoryID)
