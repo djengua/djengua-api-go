@@ -9,8 +9,9 @@ import (
 	"syscall"
 	"time"
 
+	mongoadapter "github.com/djengua/djengua-api-go/internal/adapters/mongo"
+	"github.com/djengua/djengua-api-go/internal/application"
 	"github.com/djengua/djengua-api-go/internal/config"
-	"github.com/djengua/djengua-api-go/internal/db"
 	"github.com/djengua/djengua-api-go/internal/httpapi/middleware"
 	"github.com/djengua/djengua-api-go/internal/httpapi/router"
 	"github.com/joho/godotenv"
@@ -21,16 +22,20 @@ func main() {
 	cfg := config.FromEnv()
 
 	ctx := context.Background()
-	client, err := db.NewClient(ctx, cfg.MongoURI)
+	client, err := mongoadapter.NewClient(ctx, cfg.MongoURI)
 	if err != nil {
 		log.Fatalf("mongo connection failed: %v", err)
 	}
 	defer func() { _ = client.Disconnect(context.Background()) }()
 
 	database := client.Database(cfg.MongoDB)
+	repo := mongoadapter.NewRepository(database)
+	productsService := application.NewProductsService(repo)
+	categoriesService := application.NewCategoriesService(repo)
+	collectionsService := application.NewCollectionsService(repo)
 
 	log.Printf("CORS ALLOWED: %v", cfg.AllowedOrigins)
-	h := middleware.CORS(router.New(database), cfg.AllowedOrigins)
+	h := middleware.CORS(router.New(productsService, categoriesService, collectionsService), cfg.AllowedOrigins)
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
