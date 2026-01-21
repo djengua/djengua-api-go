@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/djengua/djengua-api-go/internal/domain"
+	"github.com/djengua/djengua-api-go/internal/core/domain"
 )
 
 var ErrNotFound = errors.New("not found")

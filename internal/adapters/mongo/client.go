@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// NewClient creates a MongoDB client and verifies the connection with a ping.
 func NewClient(ctx context.Context, mongoURI string) (*mongodriver.Client, error) {
 	client, err := mongodriver.Connect(ctx, options.Client().ApplyURI(mongoURI))
 	if err != nil {

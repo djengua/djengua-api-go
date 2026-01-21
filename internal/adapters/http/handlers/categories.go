@@ -3,23 +3,22 @@ package handlers
 import (
 	"net/http"
 	"strings"
-	"time"
 
-	"github.com/djengua/djengua-api-go/internal/application"
-	"github.com/djengua/djengua-api-go/internal/domain"
+	"github.com/djengua/djengua-api-go/internal/core/domain"
+	"github.com/djengua/djengua-api-go/internal/core/usecase/categories"
 
 	"github.com/go-chi/chi/v5"
 )
 
-type CollectionsHandler struct {
-	service *application.CollectionsService
+type CategoriesHandler struct {
+	service *categories.Service
 }
 
-func NewCollectionsHandler(service *application.CollectionsService) *CollectionsHandler {
-	return &CollectionsHandler{service: service}
+func NewCategoriesHandler(service *categories.Service) *CategoriesHandler {
+	return &CategoriesHandler{service: service}
 }
 
-func (h *CollectionsHandler) List(w http.ResponseWriter, r *http.Request) {
+func (h *CategoriesHandler) List(w http.ResponseWriter, r *http.Request) {
 	page := parseIntQuery(r, "page", 1)
 	pageSize := parseIntQuery(r, "page_size", 50)
 	items, err := h.service.List(r.Context(), page, pageSize)
@@ -29,7 +28,7 @@ func (h *CollectionsHandler) List(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, items)
 }
 
-func (h *CollectionsHandler) Get(w http.ResponseWriter, r *http.Request) {
+func (h *CategoriesHandler) Get(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	c, err := h.service.Get(r.Context(), id)
 	if mapDBErr(w, err) {
@@ -38,25 +37,23 @@ func (h *CollectionsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, c)
 }
 
-func (h *CollectionsHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var in collectionPayload
+func (h *CategoriesHandler) Create(w http.ResponseWriter, r *http.Request) {
+	var in categoryPayload
 	if err := decodeJSON(r, &in); err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if msg := validateCollection(in); msg != "" {
+	if msg := validateCategory(in); msg != "" {
 		writeError(w, http.StatusBadRequest, msg)
 		return
 	}
 
-	c, err := h.service.Create(r.Context(), domain.Collection{
+	c, err := h.service.Create(r.Context(), domain.Category{
 		ID:          strings.TrimSpace(in.ID),
 		Name:        strings.TrimSpace(in.Name),
 		Slug:        strings.TrimSpace(in.Slug),
 		Description: in.Description,
 		Status:      in.Status,
-		StartDate:   in.StartDate,
-		EndDate:     in.EndDate,
 	})
 	if mapDBErr(w, err) {
 		return
@@ -64,25 +61,23 @@ func (h *CollectionsHandler) Create(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, c)
 }
 
-func (h *CollectionsHandler) Put(w http.ResponseWriter, r *http.Request) {
+func (h *CategoriesHandler) Put(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	var in collectionPayload
+	var in categoryPayload
 	if err := decodeJSON(r, &in); err != nil {
 		writeError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if msg := validateCollection(in); msg != "" {
+	if msg := validateCategory(in); msg != "" {
 		writeError(w, http.StatusBadRequest, msg)
 		return
 	}
 
-	c, err := h.service.Update(r.Context(), id, domain.Collection{
+	c, err := h.service.Update(r.Context(), id, domain.Category{
 		Name:        strings.TrimSpace(in.Name),
 		Slug:        strings.TrimSpace(in.Slug),
 		Description: in.Description,
 		Status:      in.Status,
-		StartDate:   in.StartDate,
-		EndDate:     in.EndDate,
 	})
 	if mapDBErr(w, err) {
 		return
@@ -90,7 +85,7 @@ func (h *CollectionsHandler) Put(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, c)
 }
 
-func (h *CollectionsHandler) Patch(w http.ResponseWriter, r *http.Request) {
+func (h *CategoriesHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	current, err := h.service.Get(r.Context(), id)
 	if mapDBErr(w, err) {
@@ -124,29 +119,9 @@ func (h *CollectionsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 			current.Status = domain.Status(s)
 		}
 	}
-	if v, ok := patch["start_date"]; ok {
-		if v == nil {
-			current.StartDate = nil
-		} else if s, ok := v.(string); ok {
-			if t, err := time.Parse(time.RFC3339, s); err == nil {
-				u := t.UTC()
-				current.StartDate = &u
-			}
-		}
-	}
-	if v, ok := patch["end_date"]; ok {
-		if v == nil {
-			current.EndDate = nil
-		} else if s, ok := v.(string); ok {
-			if t, err := time.Parse(time.RFC3339, s); err == nil {
-				u := t.UTC()
-				current.EndDate = &u
-			}
-		}
-	}
 
-	payload := collectionPayload{Name: current.Name, Slug: current.Slug, Description: current.Description, Status: current.Status, StartDate: current.StartDate, EndDate: current.EndDate}
-	if msg := validateCollection(payload); msg != "" {
+	payload := categoryPayload{Name: current.Name, Slug: current.Slug, Description: current.Description, Status: current.Status}
+	if msg := validateCategory(payload); msg != "" {
 		writeError(w, http.StatusBadRequest, msg)
 		return
 	}
@@ -158,7 +133,7 @@ func (h *CollectionsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, c)
 }
 
-func (h *CollectionsHandler) Delete(w http.ResponseWriter, r *http.Request) {
+func (h *CategoriesHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := h.service.Delete(r.Context(), id); mapDBErr(w, err) {
 		return

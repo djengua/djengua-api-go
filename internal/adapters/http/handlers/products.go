@@ -5,33 +5,38 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/djengua/djengua-api-go/internal/application"
-	"github.com/djengua/djengua-api-go/internal/domain"
-	"github.com/djengua/djengua-api-go/internal/ports"
+	"github.com/djengua/djengua-api-go/internal/core/domain"
+	"github.com/djengua/djengua-api-go/internal/core/ports"
+	"github.com/djengua/djengua-api-go/internal/core/usecase/products"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type ProductsHandler struct {
-	service *application.ProductsService
+	service *products.Service
 }
 
-func NewProductsHandler(service *application.ProductsService) *ProductsHandler {
+func NewProductsHandler(service *products.Service) *ProductsHandler {
 	return &ProductsHandler{service: service}
 }
 
 type productPayload struct {
-	ID            string        `json:"id,omitempty"`
-	SKU           string        `json:"sku"`
-	Name          string        `json:"name"`
-	Description   *string       `json:"description,omitempty"`
-	Price         float64       `json:"price"`
-	Currency      string        `json:"currency"`
-	Status        domain.Status `json:"status"`
-	CategoryID    string        `json:"category_id"`
-	CollectionIDs []string      `json:"collection_ids,omitempty"`
-	Images        []string      `json:"images,omitempty"`
-	Stock         *int32        `json:"stock,omitempty"`
+	ID            string             `json:"id,omitempty"`
+	SKU           string             `json:"sku"`
+	Name          string             `json:"name"`
+	Description   *string            `json:"description,omitempty"`
+	Price         float64            `json:"price"`
+	Cost          float64            `json:"cost"`
+	Currency      string             `json:"currency"`
+	Type          domain.ProductType `json:"type,omitempty"`
+	Tags          []string           `json:"tags,omitempty"`
+	Status        domain.Status      `json:"status"`
+	Size          domain.Size        `json:"size"`
+	CategoryID    string             `json:"category_id"`
+	CollectionIDs []string           `json:"collection_ids,omitempty"`
+	Images        []string           `json:"images,omitempty"`
+	Stock         *int32             `json:"stock,omitempty"`
+	Attributes    map[string]any     `json:"attributes,omitempty"`
 }
 
 func (h *ProductsHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -56,8 +61,6 @@ func (h *ProductsHandler) List(w http.ResponseWriter, r *http.Request) {
 	if v := q.Get("q"); v != "" {
 		filters.Q = &v
 	}
-	// min_price/max_price optional
-	// Keep parse tolerant
 	if v := q.Get("min_price"); v != "" {
 		if f, err := strconv.ParseFloat(v, 64); err == nil {
 			filters.MinPrice = &f
@@ -102,13 +105,19 @@ func (h *ProductsHandler) Create(w http.ResponseWriter, r *http.Request) {
 		Name:          strings.TrimSpace(in.Name),
 		Description:   in.Description,
 		Price:         in.Price,
+		Cost:          in.Cost,
 		Currency:      strings.ToUpper(strings.TrimSpace(in.Currency)),
+		Type:          in.Type,
+		Tags:          in.Tags,
 		Status:        in.Status,
+		Size:          in.Size,
 		CategoryID:    strings.TrimSpace(in.CategoryID),
 		CollectionIDs: in.CollectionIDs,
 		Images:        in.Images,
 		Stock:         in.Stock,
+		Attributes:    in.Attributes,
 	})
+
 	if mapDBErr(w, err) {
 		return
 	}
@@ -157,7 +166,6 @@ func (h *ProductsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Apply patch fields (very small patch engine)
 	applyString := func(key string, dst *string) {
 		if v, ok := patch[key]; ok {
 			if s, ok := v.(string); ok {
@@ -260,30 +268,3 @@ func (h *ProductsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
-
-// func validateProduct(in productPayload) string {
-// 	if strings.TrimSpace(in.SKU) == "" {
-// 		return "sku is required"
-// 	}
-// 	if strings.TrimSpace(in.Name) == "" {
-// 		return "name is required"
-// 	}
-// 	if in.Price <= 0 {
-// 		return "price must be > 0"
-// 	}
-// 	if strings.TrimSpace(in.Currency) == "" {
-// 		return "currency is required"
-// 	}
-// 	if strings.TrimSpace(string(in.Status)) == "" {
-// 		return "status is required"
-// 	}
-// 	switch in.Status {
-// 	case domain.ProductActive, domain.ProductInactive, domain.ProductDraft:
-// 	default:
-// 		return "invalid status"
-// 	}
-// 	if strings.TrimSpace(in.CategoryID) == "" {
-// 		return "category_id is required"
-// 	}
-// 	return ""
-// }

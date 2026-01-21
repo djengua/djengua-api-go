@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/djengua/djengua-api-go/internal/domain"
-	"github.com/djengua/djengua-api-go/internal/ports"
+	"github.com/djengua/djengua-api-go/internal/core/domain"
+	"github.com/djengua/djengua-api-go/internal/core/ports"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -35,20 +35,25 @@ func NewRepository(database *mongodriver.Database) *Repository {
 // --- Mongo documents ---
 
 type productDoc struct {
-	ID            string        `bson:"_id"`
-	SKU           string        `bson:"sku"`
-	Name          string        `bson:"name"`
-	Description   *string       `bson:"description,omitempty"`
-	Price         float64       `bson:"price"`
-	Currency      string        `bson:"currency"`
-	Status        domain.Status `bson:"status"`
-	CategoryID    string        `bson:"category_id"`
-	CollectionIDs []string      `bson:"collection_ids,omitempty"`
-	Images        []string      `bson:"images,omitempty"`
-	Stock         *int32        `bson:"stock,omitempty"`
-	CreatedAt     time.Time     `bson:"created_at"`
-	UpdatedAt     time.Time     `bson:"updated_at"`
-	DeletedAt     *time.Time    `bson:"deleted_at,omitempty"`
+	ID            string             `bson:"_id"`
+	SKU           string             `bson:"sku"`
+	Name          string             `bson:"name"`
+	Description   *string            `bson:"description,omitempty"`
+	Price         float64            `bson:"price"`
+	Cost          float64            `bson:"cost"`
+	Currency      string             `bson:"currency"`
+	Type          domain.ProductType `bson:"type,omitempty"`
+	Tags          []string           `bson:"tags,omitempty"`
+	Status        domain.Status      `bson:"status"`
+	Size          domain.Size        `bson:"size,omitempty"`
+	CategoryID    string             `bson:"category_id"`
+	CollectionIDs []string           `bson:"collection_ids,omitempty"`
+	Images        []string           `bson:"images,omitempty"`
+	Stock         *int32             `bson:"stock,omitempty"`
+	Attributes    bson.M             `bson:"attributes,omitempty"`
+	CreatedAt     time.Time          `bson:"created_at"`
+	UpdatedAt     time.Time          `bson:"updated_at"`
+	DeletedAt     *time.Time         `bson:"deleted_at,omitempty"`
 }
 
 type categoryDoc struct {
@@ -76,18 +81,28 @@ type collectionDoc struct {
 }
 
 func (d productDoc) toDomain() domain.Product {
+	var attrs map[string]any
+	if d.Attributes != nil {
+		attrs = map[string]any(d.Attributes)
+	}
+
 	return domain.Product{
 		ID:            d.ID,
 		SKU:           d.SKU,
 		Name:          d.Name,
 		Description:   d.Description,
 		Price:         d.Price,
+		Cost:          d.Cost,
 		Currency:      d.Currency,
+		Type:          d.Type,
+		Tags:          d.Tags,
 		Status:        d.Status,
+		Size:          d.Size,
 		CategoryID:    d.CategoryID,
 		CollectionIDs: d.CollectionIDs,
 		Images:        d.Images,
 		Stock:         d.Stock,
+		Attributes:    attrs,
 		CreatedAt:     d.CreatedAt,
 		UpdatedAt:     d.UpdatedAt,
 		DeletedAt:     d.DeletedAt,
@@ -129,23 +144,16 @@ func notDeletedFilter() bson.M {
 
 // --- Products ---
 
-// func (f *ports.ProductFilters) Normalize() {
-// 	if f.Page <= 0 {
-// 		f.Page = 1
-// 	}
-// 	if f.PageSize <= 0 {
-// 		f.PageSize = 20
-// 	}
-// 	if f.PageSize > 100 {
-// 		f.PageSize = 100
-// 	}
-// }
-
 func (r *Repository) CreateProduct(ctx context.Context, in domain.Product) (domain.Product, error) {
 	now := time.Now().UTC()
 	id := strings.TrimSpace(in.ID)
 	if id == "" {
 		id = uuid.NewString()
+	}
+
+	var attrs bson.M
+	if in.Attributes != nil {
+		attrs = bson.M(in.Attributes)
 	}
 
 	doc := productDoc{
@@ -154,12 +162,17 @@ func (r *Repository) CreateProduct(ctx context.Context, in domain.Product) (doma
 		Name:          in.Name,
 		Description:   in.Description,
 		Price:         in.Price,
+		Cost:          in.Cost,
 		Currency:      in.Currency,
+		Type:          in.Type,
+		Tags:          in.Tags,
 		Status:        in.Status,
+		Size:          in.Size,
 		CategoryID:    in.CategoryID,
 		CollectionIDs: in.CollectionIDs,
 		Images:        in.Images,
 		Stock:         in.Stock,
+		Attributes:    attrs,
 		CreatedAt:     now,
 		UpdatedAt:     now,
 	}
@@ -251,17 +264,27 @@ func (r *Repository) UpdateProductPut(ctx context.Context, id string, in domain.
 		filter[k] = v
 	}
 
+	attrs := bson.M(nil)
+	if in.Attributes != nil {
+		attrs = bson.M(in.Attributes)
+	}
+
 	update := bson.M{"$set": bson.M{
 		"sku":            in.SKU,
 		"name":           in.Name,
 		"description":    in.Description,
 		"price":          in.Price,
+		"cost":           in.Cost,
 		"currency":       in.Currency,
+		"type":           in.Type,
+		"tags":           in.Tags,
 		"status":         in.Status,
+		"size":           in.Size,
 		"category_id":    in.CategoryID,
 		"collection_ids": in.CollectionIDs,
 		"images":         in.Images,
 		"stock":          in.Stock,
+		"attributes":     attrs,
 		"updated_at":     now,
 	}}
 

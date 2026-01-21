@@ -9,11 +9,13 @@ import (
 	"syscall"
 	"time"
 
+	httpmw "github.com/djengua/djengua-api-go/internal/adapters/http/middleware"
+	"github.com/djengua/djengua-api-go/internal/adapters/http/router"
 	mongoadapter "github.com/djengua/djengua-api-go/internal/adapters/mongo"
-	"github.com/djengua/djengua-api-go/internal/application"
-	"github.com/djengua/djengua-api-go/internal/config"
-	"github.com/djengua/djengua-api-go/internal/httpapi/middleware"
-	"github.com/djengua/djengua-api-go/internal/httpapi/router"
+	"github.com/djengua/djengua-api-go/internal/core/usecase/categories"
+	"github.com/djengua/djengua-api-go/internal/core/usecase/collections"
+	"github.com/djengua/djengua-api-go/internal/core/usecase/products"
+	"github.com/djengua/djengua-api-go/internal/platform/config"
 	"github.com/joho/godotenv"
 )
 
@@ -30,12 +32,13 @@ func main() {
 
 	database := client.Database(cfg.MongoDB)
 	repo := mongoadapter.NewRepository(database)
-	productsService := application.NewProductsService(repo)
-	categoriesService := application.NewCategoriesService(repo)
-	collectionsService := application.NewCollectionsService(repo)
+
+	productsUC := products.NewService(repo)
+	categoriesUC := categories.NewService(repo)
+	collectionsUC := collections.NewService(repo)
 
 	log.Printf("CORS ALLOWED: %v", cfg.AllowedOrigins)
-	h := middleware.CORS(router.New(productsService, categoriesService, collectionsService), cfg.AllowedOrigins)
+	h := httpmw.CORS(router.New(productsUC, categoriesUC, collectionsUC), cfg.AllowedOrigins)
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,

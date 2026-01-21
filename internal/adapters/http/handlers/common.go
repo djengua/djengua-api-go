@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/djengua/djengua-api-go/internal/ports"
+	"github.com/djengua/djengua-api-go/internal/core/ports"
 )
 
 type errorResponse struct {
