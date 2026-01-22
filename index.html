@@ -1,0 +1,1795 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tienda | Ropa · Juguetes · Temporada</title>
+  <style>
+    :root {
+      --bg: #fbfbff;
+      /* fondo general */
+      --panel: #ffffff;
+      /* tarjetas/paneles */
+      --panel2: #ffffff;
+      --text: #1f2430;
+      /* texto principal */
+      --muted: #6a7285;
+      /* texto secundario */
+
+      /* acentos pastel (minimal) */
+      --brand: #8b7bff;
+      /* lavanda */
+      --brand2: #62d6c6;
+      /* menta */
+      --warn: #ffd38c;
+      /* durazno */
+      --danger: #ff86a6;
+      /* rosa suave */
+      --ok: #7ddc9a;
+      /* verde suave */
+
+      --border: rgba(31, 36, 48, .10);
+      --shadow: 0 10px 22px rgba(31, 36, 48, .08);
+      --radius: 16px;
+      --radius2: 12px;
+      --max: 1200px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(139, 123, 255, .14), transparent 55%),
+        radial-gradient(900px 600px at 90% 20%, rgba(98, 214, 198, .12), transparent 55%),
+        radial-gradient(900px 700px at 50% 100%, rgba(255, 211, 140, .12), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    button,
+    input,
+    select {
+      font: inherit
+    }
+
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 18px
+    }
+
+    .pill {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .03)
+    }
+
+    .kbd {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .04)
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .small {
+      font-size: 13px
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .03)
+    }
+
+    .tag.brand {
+      border-color: rgba(124, 92, 255, .45);
+      background: rgba(124, 92, 255, .10)
+    }
+
+    .tag.ok {
+      border-color: rgba(88, 214, 141, .45);
+      background: rgba(88, 214, 141, .10)
+    }
+
+    .tag.warn {
+      border-color: rgba(255, 204, 102, .45);
+      background: rgba(255, 204, 102, .10)
+    }
+
+    .tag.danger {
+      border-color: rgba(255, 92, 122, .45);
+      background: rgba(255, 92, 122, .10)
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .04);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, .06)
+    }
+
+    .btn:active {
+      transform: translateY(1px)
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, rgba(124, 92, 255, .90), rgba(35, 213, 171, .75));
+      border-color: transparent;
+      box-shadow: 0 10px 25px rgba(124, 92, 255, .20);
+    }
+
+    .btn.ghost {
+      background: transparent
+    }
+
+    .btn.icon {
+      padding: 10px;
+      width: 42px;
+      height: 42px;
+      display: inline-grid;
+      place-items: center
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, .75);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: conic-gradient(from 210deg, var(--brand), var(--brand2), var(--warn), var(--brand));
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      color: var(--muted);
+    }
+
+    nav a:hover {
+      border-color: var(--border);
+      color: var(--text);
+      background: rgba(255, 255, 255, .03)
+    }
+
+    nav a.active {
+      color: var(--text);
+      border-color: rgba(124, 92, 255, .45);
+      background: rgba(124, 92, 255, .10)
+    }
+
+    .search {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, .03);
+      min-width: 260px;
+    }
+
+    .search input {
+      background: transparent;
+      border: 0;
+      outline: 0;
+      color: var(--text);
+      width: 100%;
+    }
+
+    .search .hint {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    .badge {
+      min-width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0 6px;
+      font-size: 12px;
+      background: rgba(255, 92, 122, .25);
+      border: 1px solid rgba(255, 92, 122, .45);
+      color: var(--text);
+      transform: translate(-10px, -10px);
+      position: absolute;
+    }
+
+    .cartWrap {
+      position: relative
+    }
+
+    /* Hero */
+    .hero {
+      margin-top: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background:
+        radial-gradient(800px 400px at 10% 30%, rgba(124, 92, 255, .25), transparent 60%),
+        radial-gradient(600px 360px at 90% 30%, rgba(35, 213, 171, .18), transparent 55%),
+        linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .02));
+    }
+
+    .heroInner {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      padding: 22px;
+      align-items: stretch;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.1
+    }
+
+    .hero p {
+      margin: 0 0 16px;
+      color: var(--muted)
+    }
+
+    .hero .cta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .heroCard {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .03);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .heroStat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, .20);
+      border: 1px solid var(--border);
+    }
+
+    .heroStat strong {
+      font-size: 18px
+    }
+
+    .progress {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .06);
+      overflow: hidden;
+      border: 1px solid var(--border)
+    }
+
+    .progress>div {
+      height: 100%;
+      width: 68%;
+      background: linear-gradient(90deg, rgba(124, 92, 255, .9), rgba(35, 213, 171, .85));
+    }
+
+    /* Layout */
+    .grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .03);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel .hd {
+      padding: 14px 14px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, .16);
+    }
+
+    .panel .bd {
+      padding: 14px;
+      display: grid;
+      gap: 14px
+    }
+
+    .sectionTitle {
+      font-weight: 700
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .03);
+      cursor: pointer;
+      user-select: none;
+      color: var(--muted);
+    }
+
+    .chip.active {
+      border-color: rgba(35, 213, 171, .45);
+      background: rgba(35, 213, 171, .12);
+      color: var(--text)
+    }
+
+    .field {
+      display: grid;
+      gap: 6px
+    }
+
+    .field label {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .field select,
+    .field input[type="range"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 10px;
+      background: rgba(0, 0, 0, .25);
+      color: var(--text);
+      outline: none;
+    }
+
+    .rangeRow {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    .checks {
+      display: grid;
+      gap: 8px
+    }
+
+    .checks label {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted)
+    }
+
+    .checks input {
+      accent-color: var(--brand2)
+    }
+
+    /* Main */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .toolbar .left {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .toolbar .right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .note {
+      border: 1px dashed rgba(255, 255, 255, .18);
+      border-radius: 14px;
+      padding: 10px 12px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .02);
+    }
+
+    /* Categories row */
+    .cats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 12px 0 16px;
+    }
+
+    .cat {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .02));
+      overflow: hidden;
+      min-height: 104px;
+      position: relative;
+      padding: 14px;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, .22);
+      cursor: pointer;
+    }
+
+    .cat h3 {
+      margin: 0 0 6px;
+      font-size: 16px
+    }
+
+    .cat p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .blob {
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 120px;
+      height: 120px;
+      border-radius: 40px;
+      filter: blur(0px);
+      opacity: .9;
+      transform: rotate(12deg);
+      background: radial-gradient(circle at 30% 30%, rgba(124, 92, 255, .9), rgba(35, 213, 171, .65));
+    }
+
+    .cat.toys .blob {
+      background: radial-gradient(circle at 30% 30%, rgba(35, 213, 171, .9), rgba(255, 204, 102, .65))
+    }
+
+    .cat.season .blob {
+      background: radial-gradient(circle at 30% 30%, rgba(255, 92, 122, .85), rgba(124, 92, 255, .65))
+    }
+
+    /* Products */
+    .products {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .03);
+      overflow: hidden;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, .22);
+      display: grid;
+      grid-template-rows: 160px 1fr;
+      min-height: 330px;
+    }
+
+    .img {
+      position: relative;
+      background:
+        radial-gradient(180px 120px at 25% 30%, rgba(124, 92, 255, .35), transparent 60%),
+        radial-gradient(160px 120px at 70% 40%, rgba(35, 213, 171, .25), transparent 55%),
+        linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .img::after {
+      content: "";
+      position: absolute;
+      inset: 18px 18px auto auto;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, .25);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .25);
+      background-image:
+        radial-gradient(circle at 40% 35%, rgba(255, 255, 255, .55), transparent 45%),
+        linear-gradient(135deg, rgba(124, 92, 255, .55), rgba(35, 213, 171, .45));
+    }
+
+    .bads {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .content {
+      padding: 12px 12px 14px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .titleRow {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .title {
+      margin: 0;
+      font-weight: 750;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .price {
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    .meta .dot {
+      display: flex;
+      gap: 6px;
+      align-items: center
+    }
+
+    .dot span {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(35, 213, 171, .8);
+      display: inline-block;
+    }
+
+    .cardActions {
+      display: flex;
+      gap: 8px;
+      margin-top: 2px
+    }
+
+    .cardActions .btn {
+      flex: 1
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 22px;
+      border-top: 1px solid var(--border);
+      padding: 22px 0;
+      color: var(--muted);
+    }
+
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    /* Drawer (Cart) */
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+      z-index: 60;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: min(420px, 92vw);
+      background: rgba(17, 24, 49, .92);
+      backdrop-filter: blur(10px);
+      border-left: 1px solid var(--border);
+      transform: translateX(102%);
+      transition: transform .22s ease;
+      z-index: 70;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      box-shadow: -20px 0 40px rgba(0, 0, 0, .35);
+    }
+
+    .drawer .hd {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(0, 0, 0, .18);
+    }
+
+    .drawer .bd {
+      padding: 14px;
+      overflow: auto;
+      display: grid;
+      gap: 10px;
+    }
+
+    .line {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .thumb {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(20px 20px at 30% 30%, rgba(255, 255, 255, .35), transparent 60%),
+        linear-gradient(135deg, rgba(124, 92, 255, .55), rgba(35, 213, 171, .35));
+    }
+
+    .line .info {
+      flex: 1
+    }
+
+    .line .info strong {
+      display: block;
+      font-size: 14px
+    }
+
+    .line .info span {
+      color: var(--muted);
+      font-size: 12px
+    }
+
+    .drawer .ft {
+      padding: 14px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      gap: 10px;
+      background: rgba(0, 0, 0, .18);
+    }
+
+    .tot {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted)
+    }
+
+    /* Modal quick view */
+    dialog {
+      width: min(720px, 92vw);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(17, 24, 49, .95);
+      color: var(--text);
+      box-shadow: 0 40px 120px rgba(0, 0, 0, .65);
+      padding: 0;
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 0, 0, .62)
+    }
+
+    .modalHd {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, .18);
+    }
+
+    .modalBd {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .modalImg {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      min-height: 260px;
+      background:
+        radial-gradient(240px 160px at 30% 30%, rgba(124, 92, 255, .35), transparent 60%),
+        radial-gradient(220px 160px at 70% 40%, rgba(35, 213, 171, .25), transparent 55%),
+        linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+    }
+
+    .modalBd h2 {
+      margin: 0 0 8px
+    }
+
+    .modalBd p {
+      margin: 0 0 12px;
+      color: var(--muted)
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .qty {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 6px;
+      background: rgba(0, 0, 0, .2);
+    }
+
+    .qty button {
+      width: 36px;
+      height: 36px
+    }
+
+    .qty input {
+      width: 44px;
+      text-align: center;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+    }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      .heroInner {
+        grid-template-columns: 1fr
+      }
+
+      .grid {
+        grid-template-columns: 1fr
+      }
+
+      .products {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .cats {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media (max-width: 560px) {
+      .products {
+        grid-template-columns: 1fr
+      }
+
+      nav {
+        display: none
+      }
+
+      .search .hint {
+        display: none
+      }
+
+      .hero h1 {
+        font-size: 28px
+      }
+
+      .modalBd {
+        grid-template-columns: 1fr
+      }
+    }
+
+    /* --- Pastel minimal overrides --- */
+
+    /* Header claro */
+    header {
+      background: rgba(255, 255, 255, .78);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav a {
+      color: var(--muted);
+    }
+
+    nav a.active {
+      color: var(--text);
+      border-color: rgba(139, 123, 255, .25);
+      background: rgba(139, 123, 255, .08);
+    }
+
+    /* Panels/cards más blancos */
+    .panel,
+    .card,
+    .hero {
+      background: rgba(255, 255, 255, .82);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .panel .hd,
+    .drawer .hd,
+    .modalHd {
+      background: rgba(255, 255, 255, .70);
+    }
+
+    /* Búsqueda + inputs más “airy” */
+    .search {
+      background: rgba(255, 255, 255, .75);
+      border-color: rgba(31, 36, 48, .12);
+    }
+
+    .field select,
+    .field input[type="range"] {
+      background: rgba(255, 255, 255, .85);
+      border-color: rgba(31, 36, 48, .12);
+    }
+
+    /* Botones minimal (menos “neón”) */
+    .btn {
+      background: rgba(255, 255, 255, .72);
+      border-color: rgba(31, 36, 48, .12);
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, .92);
+    }
+
+    .btn.primary {
+      background: rgba(139, 123, 255, .16);
+      border-color: rgba(139, 123, 255, .25);
+      box-shadow: 0 10px 18px rgba(139, 123, 255, .10);
+      color: var(--text);
+    }
+
+    /* Tags/badges más sutiles */
+    .tag {
+      background: rgba(31, 36, 48, .03);
+    }
+
+    .tag.brand {
+      background: rgba(139, 123, 255, .10);
+      border-color: rgba(139, 123, 255, .25);
+    }
+
+    .tag.ok {
+      background: rgba(98, 214, 198, .10);
+      border-color: rgba(98, 214, 198, .25);
+    }
+
+    .tag.warn {
+      background: rgba(255, 211, 140, .14);
+      border-color: rgba(255, 211, 140, .30);
+    }
+
+    .tag.danger {
+      background: rgba(255, 134, 166, .12);
+      border-color: rgba(255, 134, 166, .28);
+    }
+
+    /* Chips activos pastel suave */
+    .chip.active {
+      border-color: rgba(98, 214, 198, .30);
+      background: rgba(98, 214, 198, .10);
+      color: var(--text);
+    }
+
+    /* Imágenes/placeholder menos oscuras */
+    .img,
+    .modalImg {
+      background:
+        radial-gradient(180px 120px at 25% 30%, rgba(139, 123, 255, .20), transparent 60%),
+        radial-gradient(160px 120px at 70% 40%, rgba(98, 214, 198, .16), transparent 55%),
+        linear-gradient(180deg, rgba(31, 36, 48, .04), rgba(31, 36, 48, .02));
+    }
+
+    /* Drawer + modal: blanco translúcido en lugar de oscuro */
+    .drawer {
+      background: rgba(255, 255, 255, .92);
+      border-left: 1px solid var(--border);
+      box-shadow: -20px 0 40px rgba(31, 36, 48, .10);
+    }
+
+    .backdrop {
+      background: rgba(31, 36, 48, .35);
+    }
+
+    dialog {
+      background: rgba(255, 255, 255, .95);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    dialog::backdrop {
+      background: rgba(31, 36, 48, .38);
+    }
+
+    /* Ajustes de texto muted en superficies claras */
+    .muted {
+      color: var(--muted);
+    }
+
+    .note {
+      background: rgba(255, 255, 255, .70);
+      border-color: rgba(31, 36, 48, .14);
+    }
+
+    /* Badge carrito más delicado */
+    .badge {
+      background: rgba(255, 134, 166, .22);
+      border-color: rgba(255, 134, 166, .35);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="wrap">
+      <div class="topbar">
+        <a class="brand" href="#" aria-label="Inicio">
+          <span class="logo" aria-hidden="true"></span>
+          <span>NovaStore</span>
+          <span class="tag brand small">Mockup</span>
+        </a>
+
+        <nav aria-label="Navegación principal">
+          <a class="active" href="#">Inicio</a>
+          <a href="#ropa">Ropa</a>
+          <a href="#juguetes">Juguetes</a>
+          <a href="#temporada">Temporada</a>
+          <a href="#ofertas">Ofertas</a>
+        </nav>
+
+        <div class="search" role="search">
+          <span aria-hidden="true">🔎</span>
+          <input id="q" type="search" placeholder="Buscar: sudaderas, peluches, navidad..." />
+          <div class="hint"><span class="kbd">Ctrl</span><span class="kbd">K</span></div>
+        </div>
+
+        <div class="actions">
+          <button class="btn icon" id="btnAccount" title="Mi cuenta" aria-label="Mi cuenta">👤</button>
+          <div class="cartWrap">
+            <button class="btn icon" id="btnCart" title="Carrito" aria-label="Abrir carrito">🛒</button>
+            <span class="badge" id="cartCount">2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" aria-label="Promoción principal">
+      <div class="heroInner">
+        <div>
+          <div class="pill small muted" style="width:max-content;">
+            ✨ Envío gratis desde $699 · <span class="tag warn">Regalos de temporada</span>
+          </div>
+          <h1>Ropa, juguetes y regalos para cada momento 🎁</h1>
+          <p>
+            Maqueta lista para convertir en tienda real: categorías, filtros, tarjetas de producto,
+            carrito lateral y vista rápida.
+          </p>
+          <div class="cta">
+            <button class="btn primary" id="btnExplore">Explorar colecciones</button>
+            <button class="btn" id="btnSeason">Ver temporada</button>
+            <span class="note small">Tip: prueba <span class="kbd">Ctrl</span> + <span class="kbd">K</span></span>
+          </div>
+        </div>
+
+        <aside class="heroCard" aria-label="Resumen de campaña">
+          <div class="heroStat">
+            <span class="muted">Oferta destacada</span>
+            <strong>-20% Invierno</strong>
+          </div>
+          <div class="heroStat">
+            <span class="muted">Tiempo restante</span>
+            <strong>3d 12h</strong>
+          </div>
+          <div class="field">
+            <label>Progreso de ventas (demo)</label>
+            <div class="progress" aria-label="Progreso">
+              <div></div>
+            </div>
+            <div class="rangeRow">
+              <span>0%</span><span>Meta 100%</span>
+            </div>
+          </div>
+          <div class="chips" aria-label="Etiquetas">
+            <span class="tag ok">Envío rápido</span>
+            <span class="tag brand">Nuevos</span>
+            <span class="tag warn">Temporada</span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="Catálogo">
+      <!-- Sidebar -->
+      <aside class="panel" aria-label="Filtros">
+        <div class="hd">
+          <strong>Filtros</strong>
+          <button class="btn ghost small" id="btnReset">Restablecer</button>
+        </div>
+
+        <div class="bd">
+          <div>
+            <div class="sectionTitle">Categorías</div>
+            <div class="chips" style="margin-top:8px">
+              <div class="chip active" data-cat="all">Todo</div>
+              <div class="chip" data-cat="ropa">Ropa</div>
+              <div class="chip" data-cat="juguetes">Juguetes</div>
+              <div class="chip" data-cat="temporada">Temporada</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="sort">Ordenar por</label>
+            <select id="sort">
+              <option value="reco">Recomendados</option>
+              <option value="price_asc">Precio: menor a mayor</option>
+              <option value="price_desc">Precio: mayor a menor</option>
+              <option value="new">Nuevos</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="price">Precio máximo (demo)</label>
+            <input id="price" type="range" min="199" max="1999" value="1299" />
+            <div class="rangeRow">
+              <span>$199</span><span id="priceLabel">$1299</span>
+            </div>
+          </div>
+
+          <div>
+            <div class="sectionTitle">Tallas</div>
+            <div class="checks" style="margin-top:8px">
+              <label><input type="checkbox" checked /> CH</label>
+              <label><input type="checkbox" checked /> M</label>
+              <label><input type="checkbox" /> G</label>
+              <label><input type="checkbox" /> EG</label>
+            </div>
+          </div>
+
+          <div>
+            <div class="sectionTitle">Entrega</div>
+            <div class="checks" style="margin-top:8px">
+              <label><input type="checkbox" checked /> Envío 24–48h</label>
+              <label><input type="checkbox" /> Recoger en tienda</label>
+            </div>
+          </div>
+
+          <div class="note small">
+            <strong>Nota:</strong> esto es UI demo. Los filtros no conectan a backend; puedes
+            integrar con tu API/GraphQL o lo que uses.
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <section aria-label="Listado de productos">
+        <div class="toolbar">
+          <div class="left">
+            <strong>Catálogo</strong>
+            <span class="muted small" id="resultsLabel">12 productos</span>
+            <span class="tag warn" id="seasonBanner">🎄 Temporada activa</span>
+          </div>
+          <div class="right">
+            <button class="btn" id="btnGrid">Vista: Grid</button>
+            <button class="btn" id="btnDeals">Ver ofertas</button>
+          </div>
+        </div>
+
+        <div class="cats" aria-label="Accesos rápidos a categorías">
+          <div class="cat" data-catjump="ropa" id="ropa">
+            <div class="blob" aria-hidden="true"></div>
+            <h3>Ropa</h3>
+            <p>Sudaderas, playeras, pijamas, accesorios.</p>
+          </div>
+          <div class="cat toys" data-catjump="juguetes" id="juguetes">
+            <div class="blob" aria-hidden="true"></div>
+            <h3>Juguetes</h3>
+            <p>Didácticos, peluches, juegos creativos.</p>
+          </div>
+          <div class="cat season" data-catjump="temporada" id="temporada">
+            <div class="blob" aria-hidden="true"></div>
+            <h3>Regalos de temporada</h3>
+            <p>Sets, envolturas, detalles y colecciones.</p>
+          </div>
+        </div>
+
+        <div class="products" id="products">
+          <!-- Cards (mock data) -->
+          <article class="card" data-cat="ropa" data-price="699" data-new="1">
+            <div class="img">
+              <div class="bads">
+                <span class="tag brand">Nuevo</span>
+                <span class="tag ok">Envío 24h</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Sudadera Oversize “Aurora”</h3>
+                <div class="price">$699</div>
+              </div>
+              <p class="desc">Felpa suave, corte unisex, colores sólidos.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Stock alto</div>
+                <div>⭐ 4.8</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="ropa" data-price="399" data-new="0">
+            <div class="img">
+              <div class="bads">
+                <span class="tag danger">-15%</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Playera Básica Premium</h3>
+                <div class="price">$399</div>
+              </div>
+              <p class="desc">Algodón peinado, costuras reforzadas.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Stock medio</div>
+                <div>⭐ 4.6</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="ropa" data-price="549" data-new="0">
+            <div class="img">
+              <div class="bads">
+                <span class="tag warn">Temporada</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Pijama Invierno “Nube”</h3>
+                <div class="price">$549</div>
+              </div>
+              <p class="desc">Ideal para regalo: cálida y ligera.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Últimas piezas</div>
+                <div>⭐ 4.7</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="juguetes" data-price="599" data-new="1">
+            <div class="img">
+              <div class="bads">
+                <span class="tag brand">Nuevo</span>
+                <span class="tag ok">Eco</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Bloques Creativos (120 pzs)</h3>
+                <div class="price">$599</div>
+              </div>
+              <p class="desc">Construcción libre, colores y texturas.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Stock alto</div>
+                <div>⭐ 4.9</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="juguetes" data-price="449" data-new="0">
+            <div class="img">
+              <div class="bads">
+                <span class="tag warn">Top</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Peluche “Cometa” 35 cm</h3>
+                <div class="price">$449</div>
+              </div>
+              <p class="desc">Hipoalergénico, súper suave, lavable.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Stock alto</div>
+                <div>⭐ 4.8</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="juguetes" data-price="799" data-new="0">
+            <div class="img">
+              <div class="bads">
+                <span class="tag danger">-20%</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Kit Ciencia Fácil (8 experimentos)</h3>
+                <div class="price">$799</div>
+              </div>
+              <p class="desc">Para aprender jugando. Incluye guía.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Stock medio</div>
+                <div>⭐ 4.5</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="temporada" data-price="329" data-new="0">
+            <div class="img">
+              <div class="bads">
+                <span class="tag warn">Temporada</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Bolsa Regalo + Moño (Pack x5)</h3>
+                <div class="price">$329</div>
+              </div>
+              <p class="desc">Diferentes tamaños, acabado brillante.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Stock alto</div>
+                <div>⭐ 4.4</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="temporada" data-price="899" data-new="1">
+            <div class="img">
+              <div class="bads">
+                <span class="tag brand">Nuevo</span>
+                <span class="tag warn">Temporada</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Caja Sorpresa “Fiesta”</h3>
+                <div class="price">$899</div>
+              </div>
+              <p class="desc">Mix de regalos: ideal para intercambios.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Stock medio</div>
+                <div>⭐ 4.7</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="temporada" data-price="249" data-new="0">
+            <div class="img">
+              <div class="bads">
+                <span class="tag ok">2x1</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Tarjetas + Stickers (Pack)</h3>
+                <div class="price">$249</div>
+              </div>
+              <p class="desc">Mensajes listos para cualquier ocasión.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Stock alto</div>
+                <div>⭐ 4.3</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="ropa" data-price="899" data-new="1">
+            <div class="img">
+              <div class="bads">
+                <span class="tag brand">Nuevo</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Chamarra Ligera “Brisa”</h3>
+                <div class="price">$899</div>
+              </div>
+              <p class="desc">Corta-viento, bolsillos ocultos, cómoda.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Stock medio</div>
+                <div>⭐ 4.6</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="juguetes" data-price="349" data-new="0">
+            <div class="img">
+              <div class="bads">
+                <span class="tag warn">Regalo</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Rompecabezas 500 pzs</h3>
+                <div class="price">$349</div>
+              </div>
+              <p class="desc">Ilustración a color, acabado mate premium.</p>
+              <div class="meta">
+                <div class="dot"><span></span>Stock alto</div>
+                <div>⭐ 4.5</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-cat="temporada" data-price="1299" data-new="0">
+            <div class="img">
+              <div class="bads">
+                <span class="tag danger">-20%</span>
+                <span class="tag warn">Temporada</span>
+              </div>
+            </div>
+            <div class="content">
+              <div class="titleRow">
+                <h3 class="title">Set Decoración “Noche”</h3>
+                <div class="price">$1299</div>
+              </div>
+              <p class="desc">Guirnaldas, luces y adornos (pack completo).</p>
+              <div class="meta">
+                <div class="dot"><span></span>Últimas piezas</div>
+                <div>⭐ 4.8</div>
+              </div>
+              <div class="cardActions">
+                <button class="btn" data-quick>Vista rápida</button>
+                <button class="btn primary" data-add>Agregar</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <footer>
+      <div class="foot">
+        <div>
+          <strong>NovaStore</strong> <span class="muted">· maqueta HTML</span><br />
+          <span class="small muted">Secciones: Inicio, Categorías, Filtros, Productos, Carrito y Vista rápida.</span>
+        </div>
+        <div class="small muted">
+          Hecho para prototipado · <span class="kbd">Accesible</span> · <span class="kbd">Responsive</span>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Backdrop + Drawer -->
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+  <aside class="drawer" id="drawer" aria-label="Carrito">
+    <div class="hd">
+      <strong>Carrito</strong>
+      <button class="btn icon" id="btnCloseCart" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="bd">
+      <div class="line">
+        <div class="thumb" aria-hidden="true"></div>
+        <div class="info">
+          <strong>Sudadera “Aurora”</strong>
+          <span>1 × $699</span>
+        </div>
+        <button class="btn icon" title="Quitar" aria-label="Quitar">🗑️</button>
+      </div>
+      <div class="line">
+        <div class="thumb" aria-hidden="true"></div>
+        <div class="info">
+          <strong>Peluche “Cometa”</strong>
+          <span>1 × $449</span>
+        </div>
+        <button class="btn icon" title="Quitar" aria-label="Quitar">🗑️</button>
+      </div>
+      <div class="note small">
+        Aquí puedes conectar tu lógica real: cantidades, subtotal, envío, cupones, etc.
+      </div>
+    </div>
+    <div class="ft">
+      <div class="tot"><span>Subtotal</span><strong>$1,148</strong></div>
+      <div class="tot"><span>Envío (demo)</span><strong class="muted">Gratis</strong></div>
+      <button class="btn primary">Finalizar compra</button>
+      <button class="btn">Seguir comprando</button>
+    </div>
+  </aside>
+
+  <!-- Quick View Modal -->
+  <dialog id="quickView">
+    <div class="modalHd">
+      <strong>Vista rápida</strong>
+      <button class="btn icon" id="btnCloseModal" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modalBd">
+      <div class="modalImg" aria-hidden="true"></div>
+      <div>
+        <h2 id="mTitle" style="margin:0 0 8px">Producto</h2>
+        <div class="row" style="margin-bottom:10px">
+          <span class="tag brand" id="mCat">Categoría</span>
+          <span class="tag warn" id="mBadge">Temporada</span>
+          <span class="tag ok">Envío 24–48h</span>
+        </div>
+        <p id="mDesc">Descripción del producto…</p>
+        <div class="row" style="justify-content:space-between; margin:12px 0">
+          <strong style="font-size:20px" id="mPrice">$0</strong>
+          <span class="muted">⭐ 4.7 (demo)</span>
+        </div>
+
+        <div class="row" style="margin-bottom:12px">
+          <div class="field" style="flex:1; min-width:180px">
+            <label for="mSize">Talla</label>
+            <select id="mSize">
+              <option>CH</option>
+              <option selected>M</option>
+              <option>G</option>
+              <option>EG</option>
+            </select>
+          </div>
+          <div class="field" style="flex:1; min-width:180px">
+            <label for="mColor">Color</label>
+            <select id="mColor">
+              <option>Negro</option>
+              <option>Blanco</option>
+              <option selected>Lavanda</option>
+              <option>Verde</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="qty" aria-label="Cantidad">
+            <button class="btn icon" id="qtyMinus" aria-label="Menos">−</button>
+            <input id="qtyVal" value="1" inputmode="numeric" />
+            <button class="btn icon" id="qtyPlus" aria-label="Más">+</button>
+          </div>
+          <button class="btn primary" style="flex:1" id="mAdd">Agregar al carrito</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    // --- Small UI demo wiring (no backend) ---
+    const $ = (s, el = document) => el.querySelector(s);
+    const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+    const backdrop = $("#backdrop");
+    const drawer = $("#drawer");
+    const btnCart = $("#btnCart");
+    const btnCloseCart = $("#btnCloseCart");
+    const price = $("#price");
+    const priceLabel = $("#priceLabel");
+    const resultsLabel = $("#resultsLabel");
+    const q = $("#q");
+    const sort = $("#sort");
+
+    const chips = $$(".chip");
+    const cards = $$(".card");
+    const products = $("#products");
+
+    // Drawer
+    function openCart() {
+      backdrop.style.opacity = "1";
+      backdrop.style.pointerEvents = "auto";
+      drawer.style.transform = "translateX(0)";
+    }
+    function closeCart() {
+      backdrop.style.opacity = "0";
+      backdrop.style.pointerEvents = "none";
+      drawer.style.transform = "translateX(102%)";
+    }
+    btnCart.addEventListener("click", openCart);
+    btnCloseCart.addEventListener("click", closeCart);
+    backdrop.addEventListener("click", closeCart);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeCart(); $("#quickView").open && $("#quickView").close(); } });
+
+    // Ctrl+K focus search
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        q.focus();
+      }
+    });
+
+    // Price label
+    price.addEventListener("input", () => {
+      priceLabel.textContent = "$" + price.value;
+      applyFilters();
+    });
+
+    // Category chips
+    let activeCat = "all";
+    chips.forEach(ch => {
+      ch.addEventListener("click", () => {
+        chips.forEach(x => x.classList.remove("active"));
+        ch.classList.add("active");
+        activeCat = ch.dataset.cat;
+        applyFilters();
+      });
+    });
+
+    // Reset
+    $("#btnReset").addEventListener("click", () => {
+      q.value = "";
+      sort.value = "reco";
+      price.value = 1299;
+      priceLabel.textContent = "$1299";
+      activeCat = "all";
+      chips.forEach(x => x.classList.toggle("active", x.dataset.cat === "all"));
+      applyFilters();
+    });
+
+    // Quick view modal
+    const modal = $("#quickView");
+    const mTitle = $("#mTitle");
+    const mDesc = $("#mDesc");
+    const mPrice = $("#mPrice");
+    const mCat = $("#mCat");
+    const mBadge = $("#mBadge");
+    const qtyVal = $("#qtyVal");
+
+    function openQuick(card) {
+      const title = $(".title", card).textContent.trim();
+      const desc = $(".desc", card).textContent.trim();
+      const price = $(".price", card).textContent.trim();
+      const cat = card.dataset.cat;
+
+      mTitle.textContent = title;
+      mDesc.textContent = desc + " (Vista rápida demo: aquí pones detalles reales, fotos, reseñas, etc.)";
+      mPrice.textContent = price;
+      mCat.textContent = cat[0].toUpperCase() + cat.slice(1);
+
+      const isNew = card.dataset.new === "1";
+      mBadge.textContent = isNew ? "Nuevo" : (cat === "temporada" ? "Temporada" : "Popular");
+      qtyVal.value = "1";
+      modal.showModal();
+    }
+
+    $$("#btnCloseModal").forEach(b => b.addEventListener("click", () => modal.close()));
+    $("#btnCloseModal").addEventListener("click", () => modal.close());
+
+    products.addEventListener("click", (e) => {
+      const quick = e.target.closest("[data-quick]");
+      const add = e.target.closest("[data-add]");
+      const card = e.target.closest(".card");
+      if (!card) return;
+
+      if (quick) {
+        openQuick(card);
+      }
+      if (add) {
+        // demo: just open cart
+        openCart();
+      }
+    });
+
+    // Qty controls
+    $("#qtyMinus").addEventListener("click", () => {
+      const v = Math.max(1, parseInt(qtyVal.value || "1", 10) - 1);
+      qtyVal.value = String(v);
+    });
+    $("#qtyPlus").addEventListener("click", () => {
+      const v = Math.min(99, parseInt(qtyVal.value || "1", 10) + 1);
+      qtyVal.value = String(v);
+    });
+    $("#mAdd").addEventListener("click", () => {
+      modal.close();
+      openCart();
+    });
+
+    // Category cards jump
+    $$(".cat").forEach(c => c.addEventListener("click", () => {
+      activeCat = c.dataset.catjump;
+      chips.forEach(x => x.classList.toggle("active", x.dataset.cat === activeCat));
+      applyFilters();
+      window.scrollTo({ top: c.getBoundingClientRect().top + window.scrollY - 90, behavior: "smooth" });
+    }));
+
+    // Search + sort
+    q.addEventListener("input", applyFilters);
+    sort.addEventListener("change", applyFilters);
+    $("#btnDeals").addEventListener("click", () => alert("Demo: aquí filtrarías por ofertas/cupones."));
+    $("#btnExplore").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+    $("#btnSeason").addEventListener("click", () => {
+      activeCat = "temporada";
+      chips.forEach(x => x.classList.toggle("active", x.dataset.cat === activeCat));
+      applyFilters();
+      const el = document.getElementById("temporada");
+      el && el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    function applyFilters() {
+      const query = q.value.trim().toLowerCase();
+      const maxPrice = parseInt(price.value, 10);
+      let visible = cards.slice();
+
+      // filter by category
+      if (activeCat !== "all") {
+        visible = visible.filter(c => c.dataset.cat === activeCat);
+      }
+
+      // filter by price
+      visible = visible.filter(c => parseInt(c.dataset.price, 10) <= maxPrice);
+
+      // filter by search text
+      if (query) {
+        visible = visible.filter(c => {
+          const t = $(".title", c).textContent.toLowerCase();
+          const d = $(".desc", c).textContent.toLowerCase();
+          return (t.includes(query) || d.includes(query));
+        });
+      }
+
+      // sort
+      const s = sort.value;
+      if (s === "price_asc") {
+        visible.sort((a, b) => parseInt(a.dataset.price, 10) - parseInt(b.dataset.price, 10));
+      } else if (s === "price_desc") {
+        visible.sort((a, b) => parseInt(b.dataset.price, 10) - parseInt(a.dataset.price, 10));
+      } else if (s === "new") {
+        visible.sort((a, b) => parseInt(b.dataset.new, 10) - parseInt(a.dataset.new, 10));
+      }
+
+      // render order (simple)
+      cards.forEach(c => c.style.display = "none");
+      visible.forEach(c => { c.style.display = ""; products.appendChild(c); });
+
+      resultsLabel.textContent = `${visible.length} producto${visible.length === 1 ? "" : "s"}`;
+    }
+
+    // initial
+    applyFilters();
+  </script>
+</body>
+
+</html>
