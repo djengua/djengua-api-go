@@ -22,14 +22,7 @@ func NewService(orders ports.OrderRepository) *Service {
 	return &Service{orders: orders}
 }
 
-type CreateInput struct {
-	UserID   string
-	Currency string
-	Items    []domain.OrderItem // aquí puedes recibir solo ProductID+Qty y resolver precio/nombre si quieres
-	Notes    *string
-}
-
-func (s *Service) Create(ctx context.Context, in CreateInput) (domain.Order, error) {
+func (s *Service) Create(ctx context.Context, in ports.OrderCreateInput) (domain.Order, error) {
 	if strings.TrimSpace(in.UserID) == "" {
 		return domain.Order{}, errors.New("user_id required")
 	}

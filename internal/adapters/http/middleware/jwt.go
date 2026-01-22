@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/djengua/djengua-api-go/internal/core/usecase/auth"
+	"github.com/djengua/djengua-api-go/internal/core/ports"
 )
 
 type ctxKey string
@@ -16,7 +16,7 @@ const (
 	CtxRole   ctxKey = "role"
 )
 
-func RequireJWT(authSvc *auth.Service) func(http.Handler) http.Handler {
+func RequireJWT(authSvc ports.AuthService) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			h := r.Header.Get("Authorization")

@@ -6,16 +6,16 @@ import (
 	"strings"
 
 	"github.com/djengua/djengua-api-go/internal/core/domain"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/categories"
+	"github.com/djengua/djengua-api-go/internal/core/ports"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type CategoriesHandler struct {
-	service *categories.Service
+	service ports.CategoryService
 }
 
-func NewCategoriesHandler(service *categories.Service) *CategoriesHandler {
+func NewCategoriesHandler(service ports.CategoryService) *CategoriesHandler {
 	return &CategoriesHandler{service: service}
 }
 

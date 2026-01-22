@@ -112,7 +112,7 @@ func (s *Service) NewToken(u domain.User) (string, error) {
 	return t.SignedString(s.jwtSecret)
 }
 
-func (s *Service) ParseToken(tokenString string) (*Claims, error) {
+func (s *Service) ParseToken(tokenString string) (ports.AuthClaims, error) {
 	tok, err := jwt.ParseWithClaims(
 		tokenString,
 		&Claims{},
@@ -122,18 +122,27 @@ func (s *Service) ParseToken(tokenString string) (*Claims, error) {
 		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Name}),
 	)
 	if err != nil {
-		return nil, err
+		return ports.AuthClaims{}, err
 	}
 
 	claims, ok := tok.Claims.(*Claims)
 	if !ok || !tok.Valid {
-		return nil, jwt.ErrTokenInvalidClaims
+		return ports.AuthClaims{}, jwt.ErrTokenInvalidClaims
 	}
 
 	// Validaciones extra opcionales (issuer)
 	if s.issuer != "" && claims.Issuer != s.issuer {
-		return nil, jwt.ErrTokenInvalidClaims
+		return ports.AuthClaims{}, jwt.ErrTokenInvalidClaims
 	}
 
-	return claims, nil
+	return ports.AuthClaims{UserID: claims.UserID, Role: claims.Role}, nil
+}
+
+func (s *Service) GetUser(ctx context.Context, id string) (domain.User, error) {
+	u, err := s.users.GetUserByID(ctx, id)
+	if err != nil {
+		return domain.User{}, err
+	}
+	u.PasswordHash = ""
+	return u, nil
 }

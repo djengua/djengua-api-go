@@ -8,12 +8,6 @@ import (
 	"github.com/djengua/djengua-api-go/internal/adapters/http/handlers"
 	appmw "github.com/djengua/djengua-api-go/internal/adapters/http/middleware"
 	"github.com/djengua/djengua-api-go/internal/core/ports"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/auth"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/categories"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/collections"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/orders"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/products"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/sales"
 
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
@@ -22,13 +16,12 @@ import (
 )
 
 func New(
-	productsUC *products.Service,
-	categoriesUC *categories.Service,
-	collectionsUC *collections.Service,
-	authUC *auth.Service,
-	usersRepo ports.AuthUserRepository,
-	ordersUC *orders.Service,
-	salesUC *sales.Service,
+	productsUC ports.ProductService,
+	categoriesUC ports.CategoryService,
+	collectionsUC ports.CollectionService,
+	authUC ports.AuthService,
+	ordersUC ports.OrderService,
+	salesUC ports.SaleService,
 ) http.Handler {
 	r := chi.NewRouter()
 
@@ -43,7 +36,7 @@ func New(
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) })
 	r.Handle("/metrics", promhttp.Handler())
 
-	ah := handlers.NewAuthHandler(authUC, usersRepo)
+	ah := handlers.NewAuthHandler(authUC)
 	ph := handlers.NewProductsHandler(productsUC)
 	cath := handlers.NewCategoriesHandler(categoriesUC)
 	coh := handlers.NewCollectionsHandler(collectionsUC)

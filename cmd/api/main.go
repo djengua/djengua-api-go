@@ -58,13 +58,9 @@ func main() {
 	ordersUC := orders.NewService(repo)
 	salesUC := sales.NewService(repo, repo)
 
-	// ✅ AuthUserRepository (mínimo para auth/me)
-	// repo debe implementar: CreateUser, GetUserByID, GetUserByEmail
-	usersRepo := repo
-
 	// Auth usecase
 	authUC := auth.NewService(
-		usersRepo,
+		repo,
 		cfg.JWTSecret,
 		cfg.JWTIssuer,
 		time.Duration(cfg.JWTTTLMinutes)*time.Minute,
@@ -74,7 +70,7 @@ func main() {
 
 	// Router con auth + middleware JWT en writes
 	h := httpmw.CORS(
-		router.New(productsUC, categoriesUC, collectionsUC, authUC, usersRepo, ordersUC, salesUC),
+		router.New(productsUC, categoriesUC, collectionsUC, authUC, ordersUC, salesUC),
 		cfg.AllowedOrigins,
 	)
 

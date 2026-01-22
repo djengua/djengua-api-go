@@ -6,14 +6,14 @@ import (
 
 	"github.com/djengua/djengua-api-go/internal/adapters/http/middleware"
 	"github.com/djengua/djengua-api-go/internal/core/domain"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/orders"
+	"github.com/djengua/djengua-api-go/internal/core/ports"
 )
 
 type OrdersHandler struct {
-	uc *orders.Service
+	uc ports.OrderService
 }
 
-func NewOrdersHandler(uc *orders.Service) *OrdersHandler {
+func NewOrdersHandler(uc ports.OrderService) *OrdersHandler {
 	return &OrdersHandler{uc: uc}
 }
 
@@ -36,7 +36,7 @@ func (h *OrdersHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	o, err := h.uc.Create(r.Context(), orders.CreateInput{
+	o, err := h.uc.Create(r.Context(), ports.OrderCreateInput{
 		UserID: uid, Currency: in.Currency, Items: in.Items, Notes: in.Notes,
 	})
 	if err != nil {

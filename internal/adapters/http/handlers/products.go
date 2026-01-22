@@ -8,16 +8,15 @@ import (
 
 	"github.com/djengua/djengua-api-go/internal/core/domain"
 	"github.com/djengua/djengua-api-go/internal/core/ports"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/products"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type ProductsHandler struct {
-	service *products.Service
+	service ports.ProductService
 }
 
-func NewProductsHandler(service *products.Service) *ProductsHandler {
+func NewProductsHandler(service ports.ProductService) *ProductsHandler {
 	return &ProductsHandler{service: service}
 }
 
