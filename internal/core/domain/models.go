@@ -1,3 +1,4 @@
+// internal/core/domain/models.go
 package domain
 
 import "time"

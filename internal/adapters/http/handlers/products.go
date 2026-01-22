@@ -1,3 +1,4 @@
+// internal/adapters/http/handlers/products.go
 package handlers
 
 import (
@@ -141,6 +142,7 @@ func (h *ProductsHandler) Put(w http.ResponseWriter, r *http.Request) {
 		Name:          strings.TrimSpace(in.Name),
 		Description:   in.Description,
 		Price:         in.Price,
+		Cost:          in.Cost,
 		Currency:      strings.ToUpper(strings.TrimSpace(in.Currency)),
 		Status:        in.Status,
 		CategoryID:    strings.TrimSpace(in.CategoryID),
@@ -206,6 +208,7 @@ func (h *ProductsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	applyFloat("price", &current.Price)
+	applyFloat("cost", &current.Cost)
 	applyString("currency", &current.Currency)
 	if v, ok := patch["status"]; ok {
 		if s, ok := v.(string); ok {
@@ -242,6 +245,7 @@ func (h *ProductsHandler) Patch(w http.ResponseWriter, r *http.Request) {
 		Name:          current.Name,
 		Description:   current.Description,
 		Price:         current.Price,
+		Cost:          current.Cost,
 		Currency:      current.Currency,
 		Status:        current.Status,
 		CategoryID:    current.CategoryID,

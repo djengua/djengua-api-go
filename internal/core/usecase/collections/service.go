@@ -1,3 +1,4 @@
+// internal/core/usecase/collections/service.go
 package collections
 
 import (

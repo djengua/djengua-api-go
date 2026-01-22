@@ -1,3 +1,4 @@
+// internal/core/usecase/products/service.go
 package products
 
 import (

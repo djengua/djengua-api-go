@@ -1,3 +1,4 @@
+// internal/adapters/http/handlers/categories.go
 package handlers
 
 import (

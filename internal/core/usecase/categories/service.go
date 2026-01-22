@@ -1,3 +1,4 @@
+// internal/core/usecase/categories/service.go
 package categories
 
 import (

@@ -1,3 +1,4 @@
+// internal/adapters/http/handlers/common.go
 package handlers
 
 import (
