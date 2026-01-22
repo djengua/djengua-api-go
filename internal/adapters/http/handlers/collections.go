@@ -7,16 +7,16 @@ import (
 	"time"
 
 	"github.com/djengua/djengua-api-go/internal/core/domain"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/collections"
+	"github.com/djengua/djengua-api-go/internal/core/ports"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type CollectionsHandler struct {
-	service *collections.Service
+	service ports.CollectionService
 }
 
-func NewCollectionsHandler(service *collections.Service) *CollectionsHandler {
+func NewCollectionsHandler(service ports.CollectionService) *CollectionsHandler {
 	return &CollectionsHandler{service: service}
 }
 

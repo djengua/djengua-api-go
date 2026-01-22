@@ -7,16 +7,14 @@ import (
 
 	"github.com/djengua/djengua-api-go/internal/adapters/http/middleware"
 	"github.com/djengua/djengua-api-go/internal/core/ports"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/auth"
 )
 
 type AuthHandler struct {
-	auth  *auth.Service
-	users ports.AuthUserRepository
+	auth ports.AuthService
 }
 
-func NewAuthHandler(authSvc *auth.Service, users ports.AuthUserRepository) *AuthHandler {
-	return &AuthHandler{auth: authSvc, users: users}
+func NewAuthHandler(authSvc ports.AuthService) *AuthHandler {
+	return &AuthHandler{auth: authSvc}
 }
 
 type registerReq struct {
@@ -78,10 +76,9 @@ func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusUnauthorized, "missing auth")
 		return
 	}
-	u, err := h.users.GetUserByID(r.Context(), uid)
+	u, err := h.auth.GetUser(r.Context(), uid)
 	if mapDBErr(w, err) {
 		return
 	}
-	u.PasswordHash = ""
 	writeJSON(w, http.StatusOK, u)
 }

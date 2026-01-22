@@ -20,17 +20,7 @@ func NewService(sales ports.SaleRepository, orders ports.OrderRepository) *Servi
 	return &Service{sales: sales, orders: orders}
 }
 
-type CreateInput struct {
-	UserID    string
-	OrderID   string
-	Method    domain.PaymentMethod
-	Amount    float64
-	Currency  string
-	Reference *string
-	SoldAt    *time.Time
-}
-
-func (s *Service) RegisterSale(ctx context.Context, in CreateInput) (domain.Sale, domain.Order, error) {
+func (s *Service) RegisterSale(ctx context.Context, in ports.SaleCreateInput) (domain.Sale, domain.Order, error) {
 	if strings.TrimSpace(in.UserID) == "" || strings.TrimSpace(in.OrderID) == "" {
 		return domain.Sale{}, domain.Order{}, errors.New("user_id and order_id required")
 	}

@@ -7,14 +7,14 @@ import (
 
 	"github.com/djengua/djengua-api-go/internal/adapters/http/middleware"
 	"github.com/djengua/djengua-api-go/internal/core/domain"
-	"github.com/djengua/djengua-api-go/internal/core/usecase/sales"
+	"github.com/djengua/djengua-api-go/internal/core/ports"
 )
 
 type SalesHandler struct {
-	uc *sales.Service
+	uc ports.SaleService
 }
 
-func NewSalesHandler(uc *sales.Service) *SalesHandler {
+func NewSalesHandler(uc ports.SaleService) *SalesHandler {
 	return &SalesHandler{uc: uc}
 }
 
@@ -40,7 +40,7 @@ func (h *SalesHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sale, ord, err := h.uc.RegisterSale(r.Context(), sales.CreateInput{
+	sale, ord, err := h.uc.RegisterSale(r.Context(), ports.SaleCreateInput{
 		UserID: uid, OrderID: in.OrderID, Method: in.Method,
 		Amount: in.Amount, Currency: in.Currency, Reference: in.Reference, SoldAt: in.SoldAt,
 	})
